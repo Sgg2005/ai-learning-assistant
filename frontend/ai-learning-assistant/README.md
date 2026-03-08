@@ -62,4 +62,4 @@ JWT_SECRET=your_jwt_secret
 
 ## Author
 
-Built by Simon Girma as a university side project.
+Built by Simon Girma
