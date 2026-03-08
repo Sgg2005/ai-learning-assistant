@@ -1,16 +1,65 @@
-# React + Vite
+# AI Learning Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An intelligent learning assistant web application powered by Google's Gemini AI. Built to help students learn more effectively by providing AI-powered explanations, answering questions, and supporting document-based learning.
 
-Currently, two official plugins are available:
+## About The Project
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The AI Learning Assistant is a full-stack web application designed for students who want a smarter way to study. Users can sign up, log in, and interact with an AI that can answer questions, explain concepts, and even read uploaded PDF documents to help with studying.
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- User authentication (register, login, logout)
+- AI-powered chat using Google Gemini
+- PDF upload and parsing
+- Flashcard generation
+- Quiz generation
+- Markdown and code syntax highlighting in responses
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Frontend
+- React (Vite)
+- Tailwind CSS
+- React Router DOM
+- Axios
+- React Markdown + Syntax Highlighter
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB (Atlas)
+- Mongoose
+- JSON Web Tokens (JWT)
+- Bcrypt
+- Multer
+- Google Generative AI SDK
+
+## Getting Started
+
+### Frontend
+```bash
+cd frontend/ai-learning-assistant
+npm install
+npm run dev
+```
+
+### Backend
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+## Environment Variables
+
+Create a `.env` file in the backend folder with:
+```dotenv
+PORT=8000
+NODE_ENV=development
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+```
+
+## Author
+
+Built by Simon Girma as a university side project.
