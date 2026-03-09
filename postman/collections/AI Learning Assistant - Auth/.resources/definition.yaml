@@ -1,0 +1,6 @@
+$kind: collection
+name: 'AI Learning Assistant - Auth'
+variables:
+  - key: baseUrl
+    value: '{{baseUrl}}'
+    description: Base URL (typically set in environment)

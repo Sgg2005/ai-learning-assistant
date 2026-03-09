@@ -1,0 +1,8 @@
+name: AI Learning Assistant - Local
+values:
+  - key: baseUrl
+    value: 'http://localhost:8000'
+    enabled: true
+  - key: authToken
+    value: ''
+    enabled: true
