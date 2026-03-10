@@ -1,22 +1,34 @@
 import fs from "fs/promises";
-import { pdfParse } from "pdf-parse";
-
-/**
- * Extracting text from PDF file
- * @param {string} filePath - The path to the PDF file
- * @return {Promise<{text: string, numPages: number}>} - An object containing the extracted text and the number of pages
- */
 
 export const extractTextFromPDF = async (filePath) => {
     try {
         const dataBuffer = await fs.readFile(filePath);
-        const parser = new PDFParser(new Uint8Array(dataBuffer));
-        const data = await parser.getText();
+        const uint8Array = new Uint8Array(dataBuffer);
+        
+        const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
+        
+        const loadingTask = pdfjsLib.getDocument({ 
+            data: uint8Array, 
+            useWorkerFetch: false, 
+            isEvalSupported: false, 
+            useSystemFonts: true 
+        });
+        const pdfDocument = await loadingTask.promise;
+        
+        let fullText = '';
+        const numPages = pdfDocument.numPages;
+        
+        for (let i = 1; i <= numPages; i++) {
+            const page = await pdfDocument.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            fullText += pageText + '\n';
+        }
 
         return {
-            text: data.text,
-            numPages: data.numpages,
-            info: data.info,
+            text: fullText,
+            numPages: numPages,
+            info: {},
         };
     } catch (error) {
         console.error("Error extracting text from PDF:", error);

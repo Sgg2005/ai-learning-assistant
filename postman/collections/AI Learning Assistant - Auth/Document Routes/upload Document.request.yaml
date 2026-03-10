@@ -1,0 +1,24 @@
+$kind: http-request
+name: upload Document
+url: http://localhost:8000/api/documents/upload
+method: POST
+body:
+  type: formdata
+  content:
+    - type: file
+      key: file
+      src:
+        - /C:/Users/girma/OneDrive - Heriot-Watt University/Desktop/Work/Test
+          Doc.pdf
+      description: ""
+      disabled: false
+    - type: text
+      key: title
+      value: test
+      description: ""
+      disabled: false
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWYyNjRhODA0MmI5NWExYjVjNjVlMSIsImlhdCI6MTc3MzExNjc5NSwiZXhwIjoxNzczNzIxNTk1fQ.LKvXOy2eE6EIBcmv_R2xpK1NuSxfN4-3rIlQBrLBYX0
+order: 1773085810230

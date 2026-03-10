@@ -1,0 +1,9 @@
+$kind: http-request
+name: Toggle star/favorite on flashcard
+url: http://localhost:8000/api/flashcards/69b00fefa0e67aa4dd92e9fc/star
+method: PUT
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWYyNjRhODA0MmI5NWExYjVjNjVlMSIsImlhdCI6MTc3MzE0NzIyMCwiZXhwIjoxNzczNzUyMDIwfQ.LE8cOA4t7a34RBQA9qv0cGz8865B8MAMbusHT_yqqZo
+order: 2311480192819928

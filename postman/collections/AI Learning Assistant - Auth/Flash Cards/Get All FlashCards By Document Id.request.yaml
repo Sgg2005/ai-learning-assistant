@@ -1,0 +1,12 @@
+$kind: http-request
+name: Get All FlashCards By Document Id
+url: http://localhost:8000/api/flashcards/69b00a6318b06927e2aa8040
+method: GET
+body:
+  type: json
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWYyNjRhODA0MmI5NWExYjVjNjVlMSIsImlhdCI6MTc3MzE0NTgxNiwiZXhwIjoxNzczNzUwNjE2fQ.BpM0TlBH9_za2QsMsh0xPrkdOaefS90fnsGAsVp9pAo
+order: 1773140255944

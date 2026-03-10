@@ -1,0 +1,9 @@
+$kind: http-request
+name: Get Document by ID
+url: http://localhost:8000/api/documents/69b00a6318b06927e2aa8040
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWYyNjRhODA0MmI5NWExYjVjNjVlMSIsImlhdCI6MTc3MzEyMDI2OCwiZXhwIjoxNzczNzI1MDY4fQ.hBYx3RcRurPmSTI33btrilk1hRbdU1uW2kiBRJrlfaM
+order: 2103834254408950

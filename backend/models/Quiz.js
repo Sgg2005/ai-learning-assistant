@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+const arrayLimit = (val) => val.length >= 2;
+
 const quizSchema = new mongoose.Schema({
     title: {
         type: String,

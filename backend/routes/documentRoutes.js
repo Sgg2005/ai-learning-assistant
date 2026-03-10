@@ -1,9 +1,8 @@
 import express from 'express';
-import{
+import {
     uploadDocument,
     getDocuments,
-    getDocumentById,
-    updateDocument,
+    getDocument,
     deleteDocument
 } from '../controllers/documentController.js';
 import protect from '../middleware/auth.js';
@@ -16,9 +15,7 @@ router.use(protect);
 
 router.post('/upload', upload.single('file'), uploadDocument);
 router.get('/', getDocuments);
-router.get('/:id', getDocumentById);
+router.get('/:id', getDocument);
 router.delete('/:id', deleteDocument);
-router.put('/:id', upload.single('file'), updateDocument);
 
 export default router;
-

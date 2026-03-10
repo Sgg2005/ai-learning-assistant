@@ -1,0 +1,10 @@
+$kind: http-request
+name: Delete Document
+url: http://localhost:8000/api/documents/69afa62483e0ce563aa49ca5
+method: DELETE
+auth:
+  credentials:
+    - key: token
+      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWYyNjRhODA0MmI5NWExYjVjNjVlMSIsImlhdCI6MTc3MzEyMDI2OCwiZXhwIjoxNzczNzI1MDY4fQ.hBYx3RcRurPmSTI33btrilk1hRbdU1uW2kiBRJrlfaM
+  type: bearer
+order: 4128425590193572

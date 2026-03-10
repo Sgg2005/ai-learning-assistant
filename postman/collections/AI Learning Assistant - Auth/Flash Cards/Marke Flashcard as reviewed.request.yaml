@@ -1,0 +1,9 @@
+$kind: http-request
+name: Marke Flashcard as reviewed
+url: http://localhost:8000/api/flashcards/69b00fefa0e67aa4dd92e9fc/review
+method: POST
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWYyNjRhODA0MmI5NWExYjVjNjVlMSIsImlhdCI6MTc3MzE0NTU1NiwiZXhwIjoxNzczNzUwMzU2fQ.IDijytZCoYcu0ZRlGS7HC_-pI_XvLrzyMgt2umxNfxg
+order: 1879814637626096
