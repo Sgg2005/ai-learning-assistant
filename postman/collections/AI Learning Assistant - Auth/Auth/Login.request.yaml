@@ -2,6 +2,8 @@ $kind: http-request
 name: Login
 method: POST
 url: "{{baseUrl}}/api/auth/login"
+auth:
+  type: apikey
 order: 2000
 headers:
   Content-Type: application/json

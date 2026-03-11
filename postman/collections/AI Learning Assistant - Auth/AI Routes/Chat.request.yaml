@@ -1,5 +1,18 @@
 $kind: http-request
 name: Chat
-url: ""
+url: http://localhost:8000/api/ai/chat
 method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"documentId\": \"69b148fea8f9cccd66081c2d\",\r
+
+    \    \"message\": \"What are the arguments against people analytics?\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWYyNjRhODA0MmI5NWExYjVjNjVlMSIsImlhdCI6MTc3MzIyMDc4MywiZXhwIjoxNzczODI1NTgzfQ.w-wxB53_OZOgj969MVQfu6qLDh-pm38olenXBldKh3Q
 order: 3401854915815798

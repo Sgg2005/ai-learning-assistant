@@ -1,5 +1,20 @@
 $kind: http-request
 name: Generate Quiz
-url: ""
+url: http://localhost:8000/api/ai/generate-quiz
 method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"documentId\": \"69b148fea8f9cccd66081c2d\",\r
+
+    \    \"numQuestions\": 5,\r
+
+    \    \"title\": \"test\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWYyNjRhODA0MmI5NWExYjVjNjVlMSIsImlhdCI6MTc3MzIxNjU2NywiZXhwIjoxNzczODIxMzY3fQ.gmOHN1nyMpjLo6l4bZsIGLgdJQeNIc7JbWulv2o12Eg
 order: 3169833462247539
