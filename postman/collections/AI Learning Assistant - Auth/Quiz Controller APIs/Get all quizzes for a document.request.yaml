@@ -1,0 +1,12 @@
+$kind: http-request
+name: Get all quizzes for a document
+url: http://localhost:8000/api/quizzes/69b148fea8f9cccd66081c2d
+method: GET
+body:
+  type: json
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWYyNjRhODA0MmI5NWExYjVjNjVlMSIsImlhdCI6MTc3MzM5Nzk4OSwiZXhwIjoxNzc0MDAyNzg5fQ.WfsR3Z5wjeWnvzUBJNT0GnblpkuhO3tcMG8K2eXoNcs
+order: 1773397883612

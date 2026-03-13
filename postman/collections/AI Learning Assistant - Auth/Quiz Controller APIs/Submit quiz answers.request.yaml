@@ -1,0 +1,35 @@
+$kind: http-request
+name: Submit quiz answers
+url: http://localhost:8000/api/quizzes/submit/69b00a6318b06927e2aa8040
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"answers\":[\r
+
+    \    {\r
+
+    \        \"questionIndex\": 0,\r
+
+    \        \"selectedAnswer\": \"To build user interface, espically for
+    single-page applications.\"\r
+
+    \    },\r
+
+    \    {\r
+
+    \        \"questionIndex\": 1,\r
+
+    \        \"selectedAnswer\": \"Option B\"\r
+
+    \    }\r
+
+    ]\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YWYyNjRhODA0MmI5NWExYjVjNjVlMSIsImlhdCI6MTc3MzM5Nzk4OSwiZXhwIjoxNzc0MDAyNzg5fQ.WfsR3Z5wjeWnvzUBJNT0GnblpkuhO3tcMG8K2eXoNcs
+order: 485838136220794

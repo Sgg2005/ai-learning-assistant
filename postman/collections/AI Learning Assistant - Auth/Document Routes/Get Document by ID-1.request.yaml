@@ -1,6 +1,6 @@
 $kind: http-request
 name: Get Document by ID
-url: http://localhost:8000/api/documents/69b00a6318b06927e2aa8040
+url: "{{baseUrl}}/api/documents/69b148fea8f9cccd66081c2d"
 method: GET
 auth:
   type: bearer
