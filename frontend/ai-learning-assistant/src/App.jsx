@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAuth } from './context/AuthContext';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import NotFoundPage from './pages/NotFoundPage';
 import LoginPage from './pages/Auth/LoginPage';
@@ -14,8 +15,7 @@ import QuizTakePage from './pages/Quizzes/QuizTakePage';
 import QuizResultPage from './pages/Quizzes/QuizResultPage';
 
 const App = () => {
-  const isAuthenticated = false //placeholder
-  const loading = false //placeholder
+  const {isAuthenticated, loading} = useAuth();
 
   if (loading) {
     return (
