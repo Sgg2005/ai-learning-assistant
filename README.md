@@ -34,14 +34,7 @@ The AI Learning Assistant is a full-stack web application designed for students 
 
 > You will need **two terminals** open at the same time to run both the frontend and backend.
 
-### Terminal 1 — Backend
-```bash
-cd backend
-npm install
-npm run dev
-```
-
-### Terminal 2 — Frontend
+### Frontend
 ```bash
 cd frontend/ai-learning-assistant
 npm install
@@ -49,6 +42,23 @@ npm run dev
 ```
 
 Then open your browser at `http://localhost:5173`
+
+### Backend
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+Backend runs at `http://localhost:8000`
+
+## Running The App
+Open **two terminals** side by side:
+
+- **Terminal 1** → run the backend
+- **Terminal 2** → run the frontend
+
+Both must be running at the same time for the app to work.
 
 ## Environment Variables
 Create a `.env` file in the backend folder with:
