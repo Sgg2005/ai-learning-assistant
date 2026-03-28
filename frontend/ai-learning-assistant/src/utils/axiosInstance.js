@@ -7,13 +7,13 @@ const axiosInstance = axios.create({
         "Content-type": "application/json",
         Accept: "application/json",
     },
-    withCredentials: true, // Include cookies in requests
+    withCredentials: false,
 });
 
 //request interceptor
 axiosInstance.interceptors.request.use(
     (config) => {
-        const accessToken = localStorage.getItem("accessToken");
+        const accessToken = localStorage.getItem("token");
         if (accessToken) {
             config.headers["Authorization"] = `Bearer ${accessToken}`;
         }
@@ -31,15 +31,14 @@ axiosInstance.interceptors.response.use(
     },
     (error) => {
         if(error.response){
-        if(error.response.status === 401){
-            console.error("Server error. Please try again later.");
+            if(error.response.status === 401){
+                console.error("Server error. Please try again later.");
+            }
+        } else if (error.code === "ECONNABORTED") {
+            console.error("Request timeout. Please check your network connection.");
         }
-    } else if (error.code === "ECONNABORTED") {
-        console.error("Request timeout. Please check your network connection.");
+        return Promise.reject(error);
     }
-    return Promise.reject(error);
-}
 );
 
 export default axiosInstance;
-
