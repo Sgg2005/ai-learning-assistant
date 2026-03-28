@@ -1,13 +1,10 @@
 # AI Learning Assistant
-
 An intelligent learning assistant web application powered by Google's Gemini AI. Built to help students learn more effectively by providing AI-powered explanations, answering questions, and supporting document-based learning.
 
 ## About The Project
-
 The AI Learning Assistant is a full-stack web application designed for students who want a smarter way to study. Users can sign up, log in, and interact with an AI that can answer questions, explain concepts, and even read uploaded PDF documents to help with studying.
 
 ## Features
-
 - User authentication (register, login, logout)
 - AI-powered chat using Google Gemini
 - PDF upload and parsing
@@ -16,7 +13,6 @@ The AI Learning Assistant is a full-stack web application designed for students 
 - Markdown and code syntax highlighting in responses
 
 ## Tech Stack
-
 ### Frontend
 - React (Vite)
 - Tailwind CSS
@@ -36,12 +32,16 @@ The AI Learning Assistant is a full-stack web application designed for students 
 
 ## Getting Started
 
+> You will need **two terminals** open at the same time to run both the frontend and backend.
+
 ### Frontend
 ```bash
 cd frontend/ai-learning-assistant
 npm install
 npm run dev
 ```
+
+Then open your browser at `http://localhost:5173`
 
 ### Backend
 ```bash
@@ -50,8 +50,17 @@ npm install
 npm run dev
 ```
 
-## Environment Variables
+Backend runs at `http://localhost:8000`
 
+## Running The App
+Open **two terminals** side by side:
+
+- **Terminal 1** → run the backend
+- **Terminal 2** → run the frontend
+
+Both must be running at the same time for the app to work.
+
+## Environment Variables
 Create a `.env` file in the backend folder with:
 ```dotenv
 PORT=8000
@@ -61,5 +70,4 @@ JWT_SECRET=your_jwt_secret
 ```
 
 ## Author
-
 Built by Simon Girma.
