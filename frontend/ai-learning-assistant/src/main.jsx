@@ -8,7 +8,7 @@ import App from './App.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
-      <Toaster position="top-right" toastOptions={{duration: 3000}} />
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       <App />
     </AuthProvider>
   </StrictMode>,

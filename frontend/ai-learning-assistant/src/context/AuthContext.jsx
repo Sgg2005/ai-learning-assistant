@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
-// This is the hook to USE the context
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if(!context) {
@@ -11,7 +10,6 @@ export const useAuth = () => {
     return context;
 };
 
-// This is the PROVIDER that wraps the app
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -50,7 +48,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('user');
         setUser(null);
         setIsAuthenticated(false);
-        window.location.href = '/'
+        window.location.href = '/';
     };
 
     const updateUser = (updatedUser) => {

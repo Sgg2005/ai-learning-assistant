@@ -16,12 +16,10 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if(password.length < 6){
       setError('Password must be at least 6 characters long');
       return;
     }
-
     setError('');
     setLoading(true);
     try {
@@ -62,13 +60,9 @@ const RegisterPage = () => {
 
             {/* Username Field */}
             <div className="space-y-2">
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                Username
-              </label>
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">Username</label>
               <div className="relative group">
-                <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 ${
-                  focusedField === 'username' ? 'text-orange-500' : 'text-gray-400'
-                }`}>
+                <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 ${focusedField === 'username' ? 'text-orange-500' : 'text-gray-400'}`}>
                   <User className="h-5 w-5" strokeWidth={2} />
                 </div>
                 <input
@@ -85,13 +79,9 @@ const RegisterPage = () => {
 
             {/* Email Field */}
             <div className="space-y-2">
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                Email
-              </label>
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">Email</label>
               <div className="relative group">
-                <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 ${
-                  focusedField === 'email' ? 'text-orange-500' : 'text-gray-400'
-                }`}>
+                <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 ${focusedField === 'email' ? 'text-orange-500' : 'text-gray-400'}`}>
                   <Mail className="h-5 w-5" strokeWidth={2} />
                 </div>
                 <input
@@ -108,13 +98,9 @@ const RegisterPage = () => {
 
             {/* Password Field */}
             <div className="space-y-2">
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                Password
-              </label>
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">Password</label>
               <div className="relative group">
-                <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 ${
-                  focusedField === 'password' ? 'text-orange-500' : 'text-gray-400'
-                }`}>
+                <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 ${focusedField === 'password' ? 'text-orange-500' : 'text-gray-400'}`}>
                   <Lock className="h-5 w-5" strokeWidth={2} />
                 </div>
                 <input
@@ -171,7 +157,6 @@ const RegisterPage = () => {
 
         </div>
 
-        {/* Subtle footer text */}
         <p className="text-center text-slate-400 text-xs mt-6">
           By continuing, you agree to our Terms & Privacy Policy
         </p>

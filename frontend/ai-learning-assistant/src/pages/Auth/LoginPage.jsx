@@ -145,7 +145,6 @@ const LoginPage = () => {
 
         </div>
 
-        {/* Subtle footer text */}
         <p className="text-center text-slate-400 text-xs mt-6">
           By continuing, you agree to our Terms & Privacy Policy
         </p>

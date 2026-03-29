@@ -29,22 +29,21 @@ const App = () => {
   return(
     <Router>
       <Routes>
-        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />} 
-        />
+        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/documents" element={<DocumentListPage />} />
-            <Route path="/documents/:id" element={<DocumentDetailPage />} />
-            <Route path="/flashcards" element={<FlashcardsListPage />} />
-            <Route path="/flashcards/:id" element={<FlashCardPage />} />
-            <Route path="/quizzes/take/:id" element={<QuizTakePage />} />
-            <Route path="/quizzes/result/:id" element={<QuizResultPage />} />
-          </Route>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/documents" element={<DocumentListPage />} />
+          <Route path="/documents/:id" element={<DocumentDetailPage />} />
+          <Route path="/flashcards" element={<FlashcardsListPage />} />
+          <Route path="/flashcards/:id" element={<FlashCardPage />} />
+          <Route path="/quizzes/take/:id" element={<QuizTakePage />} />
+          <Route path="/quizzes/result/:id" element={<QuizResultPage />} />
+        </Route>
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
@@ -52,4 +51,4 @@ const App = () => {
   );
 }
 
-export default App
+export default App;
