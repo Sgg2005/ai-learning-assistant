@@ -1,46 +1,58 @@
-import express from 'express'
+import express from 'express';
 import { body } from 'express-validator';
 import {
-    register,
-    login,
-    getProfile,
-    updateProfile,
-    changePassword
+  register,
+  verifyEmail,
+  login,
+  getProfile,
+  updateProfile,
+  changePassword
 } from '../controllers/authController.js';
 import protect from '../middleware/auth.js';
 
 const router = express.Router();
 
-//validation middleware 
+// validation middleware
 const registerValidation = [
-    body('username')
-        .trim()
-        .isLength({ min: 3, max: 30 })
-        .withMessage('Username must be between 3 and 30 characters'),
-    body('email')
-        .isEmail()
-        .normalizeEmail()
-        .withMessage('Please provide a valid email address'),
-    body('password')
-        .isLength({ min: 6 })
-        .withMessage('Password must be at least 6 characters long')
+  body('username')
+    .trim()
+    .isLength({ min: 3, max: 30 })
+    .withMessage('Username must be between 3 and 30 characters'),
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email address'),
+  body('password')
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters long')
 ];
 
 const loginValidation = [
-    body('email')
-        .isEmail()
-        .normalizeEmail()
-        .withMessage('Please provide a valid email address'),
-    body('password')
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email address'),
+  body('password')
     .notEmpty()
     .withMessage('Password is required')
 ];
 
-//public routes
+const verifyEmailValidation = [
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email address'),
+  body('code')
+    .isLength({ min: 6, max: 6 })
+    .withMessage('Verification code must be 6 digits')
+];
+
+// public routes
 router.post('/register', registerValidation, register);
+router.post('/verify-email', verifyEmailValidation, verifyEmail);
 router.post('/login', loginValidation, login);
 
-//protected routes
+// protected routes
 router.get('/profile', protect, getProfile);
 router.put('/profile', protect, updateProfile);
 router.post('/change-password', protect, changePassword);

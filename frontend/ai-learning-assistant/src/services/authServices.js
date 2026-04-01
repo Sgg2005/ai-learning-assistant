@@ -26,6 +26,18 @@ const register = async (username, email, password) => {
   }
 };
 
+const verifyEmail = async (email, code) => {
+  try {
+    const response = await axiosInstance.post(API_PATHS.AUTH.VERIFY_EMAIL, {
+      email,
+      code,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'An unknown error occurred' };
+  }
+};
+
 const getProfile = async () => {
   try {
     const response = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
@@ -56,6 +68,7 @@ const changePassword = async (passwords) => {
 const authService = {
   login,
   register,
+  verifyEmail, // <-- added
   getProfile,
   updateProfile,
   changePassword,

@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import authService from '../../services/authServices';
 import { BrainCircuit, Mail, Lock, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const LoginPage = () => {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -14,20 +13,37 @@ const LoginPage = () => {
   const [focusedField, setFocusedField] = useState(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
+
+  useEffect(() => {
+    if (location.state?.email) {
+      setEmail(location.state.email);
+    }
+    if (location.state?.verified) {
+      toast.success("Email verified successfully. Please log in.");
+    }
+  }, [location.state]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+
     try {
-      const { token, user } = await authService.login(email, password);
+      const normalizedEmail = email.toLowerCase().trim();
+      const { token, user } = await authService.login(normalizedEmail, password);
       login(user, token);
       toast.success('Login successful!');
       navigate('/dashboard');
-    } catch(err) {
-      setError(err.message || 'Login failed. Please try again.');
-      toast.error(err.message || 'Failed to login.');
+    } catch (err) {
+      const message = err.message || 'Login failed. Please try again.';
+      setError(message);
+      toast.error(message);
+
+      if (message.toLowerCase().includes("verify your email")) {
+        navigate('/verify-email', { state: { email: email.toLowerCase().trim() } });
+      }
     } finally {
       setLoading(false);
     }
@@ -35,13 +51,10 @@ const LoginPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50">
-      
       <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-30"/>
 
       <div className="relative w-full max-w-md px-6">
         <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-10">
-          
-          {/* Header */}
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 shadow-lg shadow-orange-500/25 mb-6">
               <BrainCircuit className="w-7 h-7 text-white" strokeWidth={2} />
@@ -54,10 +67,7 @@ const LoginPage = () => {
             </p>
           </div>
 
-          {/* Form */}
           <div className="space-y-5">
-
-            {/* Email Field */}
             <div className="space-y-2">
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">
                 Email
@@ -80,7 +90,6 @@ const LoginPage = () => {
               </div>
             </div>
 
-            {/* Password Field */}
             <div className="space-y-2">
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">
                 Password
@@ -103,14 +112,12 @@ const LoginPage = () => {
               </div>
             </div>
 
-            {/* Error Message */}
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
                 <p className="text-red-600 text-sm font-medium">{error}</p>
               </div>
             )}
 
-            {/* Submit Button */}
             <button
               onClick={handleSubmit}
               disabled={loading}
@@ -130,10 +137,8 @@ const LoginPage = () => {
                 )}
               </span>
             </button>
-
           </div>
 
-          {/* Footer */}
           <div className="text-center mt-8">
             <p className="text-slate-500 text-sm">
               Don't have an account?{' '}
@@ -142,13 +147,11 @@ const LoginPage = () => {
               </Link>
             </p>
           </div>
-
         </div>
 
         <p className="text-center text-slate-400 text-xs mt-6">
           By continuing, you agree to our Terms & Privacy Policy
         </p>
-
       </div>
     </div>
   );

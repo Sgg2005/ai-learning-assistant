@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import NotFoundPage from './pages/NotFoundPage';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
+import VerifyEmailPage from './pages/Auth/VerifyEmailPage'; // <-- add this
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import ProfilePage from './pages/Profile/ProfilePage';
@@ -16,7 +17,7 @@ import QuizResultPage from './pages/Quizzes/QuizResultPage';
 import AppLayout from './components/layout/AppLayout';
 
 const App = () => {
-  const {isAuthenticated, loading} = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
     return (
@@ -26,12 +27,13 @@ const App = () => {
     );
   }
 
-  return(
+  return (
     <Router>
       <Routes>
         <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} /> {/* <-- add this */}
 
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
@@ -49,6 +51,6 @@ const App = () => {
       </Routes>
     </Router>
   );
-}
+};
 
 export default App;
