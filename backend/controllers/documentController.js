@@ -60,8 +60,16 @@ export const uploadDocument = async (req, res, next) => {
         //clean up file on error
         if (req.file) {
             await fs.unlink(req.file.path).catch(() => {});
-    }
-    next(error);
+        }
+        if (error?.message === "Request aborted") {
+            return res.status(499).json({
+            success: false,
+            error: "Upload was canceled before completion.",
+            statusCode: 499,
+            });
+        }
+        
+        next(error);
     }
 };
 

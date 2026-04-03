@@ -22,8 +22,23 @@ const errorHandler = (err, req, res, next) => {
   }
 
   // Multer file size error
-  if (err.code === 'LIMIT_FILE_SIZE') {
-    message = 'File size exceeds the maximum limit of 10MB';
+  if (err.code === "LIMIT_FILE_SIZE") {
+    message = "File size exceeds the maximum limit of 10MB";
+    statusCode = 400;
+  }
+
+  // Upload aborted by client
+  if (err.message === "Request aborted") {
+    return res.status(499).json({
+      success: false,
+      error: "Upload canceled before completion.",
+      statusCode: 499,
+    });
+  }
+
+  // Invalid file type
+  if (err.message === "Only PDF files are allowed") {
+    message = err.message;
     statusCode = 400;
   }
 
