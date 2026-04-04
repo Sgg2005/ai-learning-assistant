@@ -208,7 +208,7 @@ export const deleteDocument = async (req, res, next) => {
         }
 
         //delete associated flashcards and quizzes
-        await fs.unlink(document.filePath).catch(() => {});
+        await fs.unlink(`uploads/documents/${document.fileName}`).catch(() => {});
 
         //delete document
         await document.deleteOne();
