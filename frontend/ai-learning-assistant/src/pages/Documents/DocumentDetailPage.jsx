@@ -6,13 +6,14 @@ import toast from 'react-hot-toast';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import PageHeader from '../../components/common/PageHeader';
 import Tabs from '../../components/common/Tabs';
+import ChatInterface from '../../components/chat/ChatInterface';
 
 const DocumentDetailPage = () => {
 
   const { id } = useParams();
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('content');
+  const [activeTab, setActiveTab] = useState('Content');
 
   useEffect(() => {
     const fetchDocumentDetails = async () => {
@@ -89,7 +90,7 @@ const DocumentDetailPage = () => {
   };
   
   const renderChat = () => {
-    return "renderChat"
+    return <ChatInterface />
   };
 
   const renderAIActions = () => {
@@ -105,11 +106,11 @@ const DocumentDetailPage = () => {
   }
 
   const tabs = [
-    { name: 'Content', label: 'content', content: renderContent() },
-    { name: 'Chat', label: 'chat', content: renderChat() },
-    { name: 'AI Actions', label: 'ai-actions', content: renderAIActions() },
-    { name: 'Flashcards', label: 'flashcards', content: renderFlashcards() },
-    { name: 'Quizzes', label: 'quizzes', content: renderQuizzesTab() },
+    { name: 'Content', label: 'Content', content: renderContent() },
+    { name: 'Chat', label: 'Chat', content: <ChatInterface /> },
+    { name: 'AI Actions', label: 'AI Actions', content: renderAIActions() },
+    { name: 'Flashcards', label: 'Flashcards', content: renderFlashcards() },
+    { name: 'Quizzes', label: 'Quizzes', content: renderQuizzesTab() },
   ];
 
   if(loading) {
