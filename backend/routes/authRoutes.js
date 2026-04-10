@@ -28,13 +28,17 @@ const registerValidation = [
 ];
 
 const loginValidation = [
-  body('email')
-    .isEmail()
-    .normalizeEmail()
-    .withMessage('Please provide a valid email address'),
   body('password')
     .notEmpty()
-    .withMessage('Password is required')
+    .withMessage('Password is required'),
+  body().custom((value, { req }) => {
+    const hasEmail = !!req.body.email;
+    const hasUsername = !!req.body.username;
+    if (!hasEmail && !hasUsername) {
+      throw new Error('Please provide email or username');
+    }
+    return true;
+  }),
 ];
 
 const verifyEmailValidation = [

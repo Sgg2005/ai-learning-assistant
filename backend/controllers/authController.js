@@ -51,7 +51,6 @@ export const register = async (req, res, next) => {
       });
     }
 
-    // frontend validates strength, backend keeps minimum
     if (password.length < 8) {
       return res.status(400).json({
         success: false,
@@ -67,7 +66,6 @@ export const register = async (req, res, next) => {
       });
     }
 
-    //replace any previous pending attempt for same email
     pendingRegistrations.delete(normalizedEmail);
     pendingRegistrations.set(normalizedEmail, {
       username: username.trim(),
@@ -79,9 +77,7 @@ export const register = async (req, res, next) => {
 
     const { data, error } = await supabasePublic.auth.signInWithOtp({
       email: normalizedEmail,
-      options: {
-        shouldCreateUser: true,
-      },
+      options: { shouldCreateUser: true },
     });
 
     if (error) {
@@ -101,13 +97,13 @@ export const register = async (req, res, next) => {
       message: "OTP sent to email. Please verify to complete registration.",
       data,
     });
-    } catch (error) {
-      console.error("REGISTER_ERROR:", error);
-      return res.status(500).json({
-        success: false,
-        error: error.message || "Internal server error",
-      });
-    }
+  } catch (error) {
+    console.error("REGISTER_ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Internal server error",
+    });
+  }
 };
 
 // @desc    Verify email OTP and CREATE Mongo user
@@ -152,7 +148,6 @@ export const verifyEmail = async (req, res, next) => {
       });
     }
 
-    // Only now create Mongo user
     let user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
@@ -200,18 +195,21 @@ export const verifyEmail = async (req, res, next) => {
 // @access  Public
 export const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, username, password } = req.body;
 
-    if (!email || !password) {
+    if ((!email && !username) || !password) {
       return res.status(400).json({
         success: false,
-        error: "Please provide email and password",
+        error: "Please provide email/username and password",
         statusCode: 400,
       });
     }
 
-    const normalizedEmail = email.toLowerCase().trim();
-    const user = await User.findOne({ email: normalizedEmail }).select("+password");
+    const query = email
+      ? { email: email.toLowerCase().trim() }
+      : { username: username.trim() };
+
+    const user = await User.findOne(query).select("+password");
 
     if (!user) {
       return res.status(401).json({
@@ -262,7 +260,7 @@ export const login = async (req, res, next) => {
 // @access  Private
 export const getProfile = async (req, res, next) => {
   try {
-    const user = await User.findById(req.User._id);
+    const user = await User.findById(req.user._id);
 
     return res.status(200).json({
       success: true,
@@ -287,7 +285,7 @@ export const updateProfile = async (req, res, next) => {
   try {
     const { username, email, profileImage } = req.body;
 
-    const user = await User.findById(req.User._id);
+    const user = await User.findById(req.user._id);
 
     if (username) user.username = username;
     if (email) user.email = email.toLowerCase().trim();
@@ -325,7 +323,7 @@ export const changePassword = async (req, res, next) => {
       });
     }
 
-    const user = await User.findById(req.User._id).select("+password");
+    const user = await User.findById(req.user._id).select("+password");
     const isMatch = await user.matchPassword(currentPassword);
 
     if (!isMatch) {

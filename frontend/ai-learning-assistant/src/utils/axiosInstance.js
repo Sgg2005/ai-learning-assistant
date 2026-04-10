@@ -12,16 +12,19 @@ const axiosInstance = axios.create({
 
 //request interceptor
 axiosInstance.interceptors.request.use(
-    (config) => {
-        const accessToken = localStorage.getItem("token");
-        if (accessToken) {
-            config.headers["Authorization"] = `Bearer ${accessToken}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
+  (config) => {
+    const accessToken = localStorage.getItem("token");
+
+    // don't attach token for auth endpoints
+    const isAuthRoute = config.url?.includes("/auth/login") || config.url?.includes("/auth/register");
+
+    if (accessToken && !isAuthRoute) {
+      config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
 );
 
 //response interceptor
@@ -32,7 +35,7 @@ axiosInstance.interceptors.response.use(
     (error) => {
         if(error.response){
             if(error.response.status === 401){
-                console.error("Server error. Please try again later.");
+                console.error(error.response?.data?.error || "Unauthorized");
             }
         } else if (error.code === "ECONNABORTED") {
             console.error("Request timeout. Please check your network connection.");
