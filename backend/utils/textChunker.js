@@ -145,23 +145,24 @@ export const findRelevantChunks = (chunks, query, maxChunks = 3) => {
     let score = 0;
 
     // Score each query word
+    // Score each query word
     for (const word of queryWords) {
+      const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // add this line
+
       // Exact word match (higher score)
-      const exactMatches = (content.match(new RegExp(`\\b${word}\\b`, 'g')) || []).length;
+      const exactMatches = (content.match(new RegExp(`\\b${escapedWord}\\b`, 'g')) || []).length;
       score += exactMatches * 3;
 
       // Partial match (lower score)
-      const partialMatches = (content.match(new RegExp(word, 'g')) || []).length;
+      const partialMatches = (content.match(new RegExp(escapedWord, 'g')) || []).length;
       score += Math.max(0, partialMatches - exactMatches) * 1.5;
     }
 
     // Bonus: Multiple query words found
-    const uniqueWordsFound = queryWords.filter(word =>
-      content.includes(word)
-    ).length;
-    if (uniqueWordsFound > 1) {
-      score += uniqueWordsFound * 2;
-    }
+    const uniqueWordsFound = queryWords.filter(word => {
+      const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return content.match(new RegExp(`\\b${escapedWord}\\b`));
+    }).length;
 
     // Normalize by content length
     const normalizedScore = score / Math.sqrt(contentWords);

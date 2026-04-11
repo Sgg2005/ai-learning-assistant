@@ -171,15 +171,18 @@ export const generateSummary = async (text) => {
 export const chatWithContext = async (question, chunks) => {
     const context = chunks.map((c, i) => `[Chunk ${i + 1}]\n${c.content}`).join('\n\n');
 
-    const prompt = `Based on the following context from a document, Analyse the context and answer the user's question.
-    If the answer is not in the context, say so.
+    const prompt = `You are a friendly and helpful study assistant.
 
-    Context:
+    For general conversational questions (greetings, questions about what you can do, how you work, etc.), answer them naturally and helpfully.
+
+    For questions about a specific topic or concept, answer using only the document context provided below. If the answer is not found in the document, say: "I couldn't find information about that in your document. Try asking something else from it."
+
+    Context from the document:
     ${context}
 
-    Question: ${question}
+    User question: ${question}
 
-    Answer: `;
+    Answer:`;
 
     try {
         const response = await ai.models.generateContent({

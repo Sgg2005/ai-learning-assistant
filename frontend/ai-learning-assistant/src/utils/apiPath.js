@@ -24,7 +24,10 @@ export const API_PATHS = {
     GENERATE_SUMMARY: "/api/ai/generate-summary",
     CHAT: "/api/ai/chat",
     EXPLAIN_CONCEPT: "/api/ai/explain-concept",
-    GET_CHAT_HISTORY: (documentId) => `/api/ai/chat-history/${documentId}`,
+    GET_CHAT_SESSIONS: (documentId) => `/api/ai/chat-sessions?documentId=${documentId}`,
+    GET_CHAT_SESSION: (sessionId) => `/api/ai/chat-sessions/${sessionId}`,
+    RENAME_CHAT_SESSION: (sessionId) => `/api/ai/chat-sessions/${sessionId}`,
+    DELETE_CHAT_SESSION: (sessionId) => `/api/ai/chat-sessions/${sessionId}`,
   },
 
   FLASHCARDS: {

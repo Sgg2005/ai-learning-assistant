@@ -34,10 +34,8 @@ export const generateFlashcards = async (req, res, next) => {
             });
         }
 
-        //generate flashcards using Gemini
         const cards = await geminiService.generateFlashcards(document.extractedText, parseInt(count));
 
-        //save flashcards to DB
         const flashcardSet = new FlashCard({
             userId: req.user._id,
             documentId: document._id,
@@ -91,13 +89,11 @@ export const generateQuiz = async (req, res, next) => {
             });
         }
 
-        //Generate quiz using Gemini
         const questions = await geminiService.generateQuiz(
             document.extractedText,
             parseInt(questionCount)
         );
 
-        //save quiz to DB
         const quiz = new Quiz({
             userId: req.user._id,
             documentId: document._id,
@@ -109,7 +105,6 @@ export const generateQuiz = async (req, res, next) => {
         });
 
         await quiz.save();
-
 
         res.status(200).json({
             success: true,
@@ -148,9 +143,8 @@ export const generateSummary = async (req, res, next) => {
                 error: 'Document not found or not ready',
                 statusCode: 404
             });
-        }   
+        }
 
-        //generate summary using Gemini
         const summary = await geminiService.generateSummary(document.extractedText);
 
         res.status(200).json({
@@ -173,7 +167,7 @@ export const generateSummary = async (req, res, next) => {
 // @access  Private
 export const chat = async (req, res, next) => {
     try {
-        const { documentId, message } = req.body;
+        const { documentId, message, sessionId } = req.body;
 
         if (!documentId || !message) {
             return res.status(400).json({
@@ -182,7 +176,7 @@ export const chat = async (req, res, next) => {
                 statusCode: 400
             });
         }
-        
+
         const document = await Document.findOne({
             _id: documentId,
             userId: req.user._id,
@@ -197,41 +191,33 @@ export const chat = async (req, res, next) => {
             });
         }
 
-        //find relevant chunks
         const relevantChunks = findRelevantChunks(document.chunks, message);
         const chunkIndices = relevantChunks.map(chunk => chunk.chunkIndex);
 
-        //get or create chat history
-        let chatHistory = await ChatHistory.findOne({
-            userId: req.user._id,
-            documentId: document._id
-        });
+        // get existing session or create new one
+        let chatHistory;
+        if (sessionId) {
+            chatHistory = await ChatHistory.findOne({
+                _id: sessionId,
+                userId: req.user._id,
+                documentId: document._id
+            });
+        }
 
         if (!chatHistory) {
             chatHistory = new ChatHistory({
                 userId: req.user._id,
                 documentId: document._id,
+                sessionName: message.slice(0, 40),
                 messages: []
             });
         }
 
-        //generate AI response using Gemini
         const answer = await geminiService.chatWithContext(message, relevantChunks);
 
-        //save conversation to DB
         chatHistory.messages.push(
-            {
-                role: 'user',
-                content: message,
-                timestamp: new Date(),
-                relevantChunks: []
-            },
-            {
-                role: 'assistant',
-                content: answer,
-                timestamp: new Date(),
-                relevantChunks: chunkIndices
-            }
+            { role: 'user', content: message, timestamp: new Date(), relevantChunks: [] },
+            { role: 'assistant', content: answer, timestamp: new Date(), relevantChunks: chunkIndices }
         );
 
         await chatHistory.save();
@@ -242,7 +228,8 @@ export const chat = async (req, res, next) => {
                 question: message,
                 answer,
                 relevantChunks: chunkIndices,
-                chatHistory: chatHistory.messages
+                sessionId: chatHistory._id,
+                sessionName: chatHistory.sessionName
             },
             message: 'Response generated successfully'
         });
@@ -277,14 +264,12 @@ export const explainConcept = async (req, res, next) => {
                 success: false,
                 error: 'Document not found or not ready',
                 statusCode: 404
-            }); 
+            });
         }
 
-        //find relevant chunks
         const relevantChunks = findRelevantChunks(document.chunks, concept);
         const context = relevantChunks.map(chunk => chunk.text).join('\n\n');
 
-        //generate explanation using Gemini
         const explaination = await geminiService.explainConcept(concept, context);
 
         res.status(200).json({
@@ -302,10 +287,10 @@ export const explainConcept = async (req, res, next) => {
     }
 };
 
-// @desc    Get chat history for a document
-// @route   GET /api/ai/chat-history?documentId=xxx
+// @desc    Get all chat sessions for a document
+// @route   GET /api/ai/chat-sessions?documentId=xxx
 // @access  Private
-export const getChatHistory = async (req, res, next) => {
+export const getChatSessions = async (req, res, next) => {
     try {
         const { documentId } = req.query;
 
@@ -317,25 +302,115 @@ export const getChatHistory = async (req, res, next) => {
             });
         }
 
-        const chatHistory = await ChatHistory.findOne({
+        const sessions = await ChatHistory.find({
             userId: req.user._id,
             documentId: documentId
-        }).select('messages'); //to retrieve messages array only
+        }).select('sessionName createdAt updatedAt messages').sort({ updatedAt: -1 });
 
-        if (!chatHistory) {
+        res.status(200).json({
+            success: true,
+            data: sessions,
+            message: 'Sessions retrieved successfully'
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Get a single chat session
+// @route   GET /api/ai/chat-sessions/:sessionId
+// @access  Private
+export const getChatSession = async (req, res, next) => {
+    try {
+        const { sessionId } = req.params;
+
+        const session = await ChatHistory.findOne({
+            _id: sessionId,
+            userId: req.user._id
+        });
+
+        if (!session) {
             return res.status(404).json({
-                success: true,
-                data: [], //return empty array if no chat history found
-                message: 'No chat history found for this document'
+                success: false,
+                error: 'Session not found',
+                statusCode: 404
             });
         }
 
         res.status(200).json({
             success: true,
-            data: chatHistory.messages,
-            message: 'Chat history retrieved successfully'
+            data: session,
+            message: 'Session retrieved successfully'
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Rename a chat session
+// @route   PUT /api/ai/chat-sessions/:sessionId
+// @access  Private
+export const renameChatSession = async (req, res, next) => {
+    try {
+        const { sessionId } = req.params;
+        const { sessionName } = req.body;
+
+        if (!sessionName) {
+            return res.status(400).json({
+                success: false,
+                error: 'Please provide a session name',
+                statusCode: 400
+            });
+        }
+
+        const session = await ChatHistory.findOneAndUpdate(
+            { _id: sessionId, userId: req.user._id },
+            { sessionName },
+            { new: true }
+        );
+
+        if (!session) {
+            return res.status(404).json({
+                success: false,
+                error: 'Session not found',
+                statusCode: 404
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: session,
+            message: 'Session renamed successfully'
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Delete a chat session
+// @route   DELETE /api/ai/chat-sessions/:sessionId
+// @access  Private
+export const deleteChatSession = async (req, res, next) => {
+    try {
+        const { sessionId } = req.params;
+
+        const session = await ChatHistory.findOneAndDelete({
+            _id: sessionId,
+            userId: req.user._id
         });
 
+        if (!session) {
+            return res.status(404).json({
+                success: false,
+                error: 'Session not found',
+                statusCode: 404
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Session deleted successfully'
+        });
     } catch (error) {
         next(error);
     }
