@@ -100,7 +100,21 @@ const FlashcardManager = ({ documentId }) => {
         setIsDeleteModalOpen(true);
     };
 
-    const handleConfirmDelete = async () => {};
+    const handleConfirmDelete = async () => {
+        if(!setToDelete) return;
+        setDeleting(true);
+        try {
+            await flashcardService.deleteFlashcardSet(setToDelete._id);
+            toast.success("Flashcard set deleted successfully");
+            setIsDeleteModalOpen(false);
+            setSetToDelete(null);
+            fetchFlashcards();
+        } catch (error) {
+            toast.error(error.message || "Failed to delete flashcard set.");
+        } finally {
+            setDeleting(false);
+        }
+    };
 
     const handleSelectSet = (set) => {
         setSelectedSet(set);
@@ -231,9 +245,48 @@ const FlashcardManager = ({ documentId }) => {
     };
 
     return (
+        <>
         <div className="bg-white border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-8">
             {selectedSet ? renderFlashcardSets() : renderSetList()}
         </div>
+
+        {/* Delete Confirmation Modal */}
+        <Modal
+           isOpen={isDeleteModalOpen}
+           onClose={() => setIsDeleteModalOpen(false)}
+           title="Delete Flashcard Set"
+        >
+         <div className="flex flex-col gap-5">
+            <p className="text-sm text-slate-600 leading-relaxed">
+                Are you sure you want to delete this flashcard set? This action cannot be undone.
+            </p>
+         <div className="flex items-center gap-3">
+            <button 
+               type="button"
+               onClick={() => setIsDeleteModalOpen(false)}
+               disabled={deleting}
+               className="flex-1 py-2.5 px-4 rounded-xl bg-orange-50 border border-orange-100 text-slate-600 text-sm font-medium hover:bg-orange-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              Cancel
+            </button>
+            <button
+               onClick={handleConfirmDelete}
+               disabled={deleting}
+               className="flex-1 py-2.5 px-4 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+                {deleting ? (
+                    <span className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Deleting...
+                    </span>
+                ) : (
+                    "Delete Set"
+                )}
+                </button>
+            </div>
+        </div>
+    </Modal>
+        </>
     );
 };
 
