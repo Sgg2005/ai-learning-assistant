@@ -7,6 +7,9 @@ import {
   ArrowLeft,
   Sparkles,
   Brain,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import moment from "moment";
@@ -28,6 +31,8 @@ const FlashcardManager = ({ documentId }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [setToDelete, setSetToDelete] = useState(null);
+    const [renamingId, setRenamingId] = useState(null);
+    const [renameValue, setRenameValue] = useState('');
 
     const fetchFlashcards = async () => {
         setLoading(true);
@@ -92,7 +97,25 @@ const FlashcardManager = ({ documentId }) => {
         }
     };
 
-    const handleToggleStar = async (cardIndex) => {};
+    const handleToggleStar = async (cardId) => {
+        try {
+            await flashcardService.toggleStar(cardId);
+            const updatedSets = flashcardSets.map((set) => {
+                if (set._id === selectedSet._id) {
+                    const updatedCards = set.cards.map((card) =>
+                        card._id === cardId ? { ...card, isStarred: !card.isStarred } : card
+                    );
+                    return { ...set, cards: updatedCards };
+                }
+                return set;
+            });
+            setFlashcardSets(updatedSets);
+            setSelectedSet(updatedSets.find((set) => set._id === selectedSet._id));
+            toast.success("Flashcard starred status updated!");
+        } catch (error) {
+            toast.error("Failed to update flashcard status");
+        }
+    };
 
     const handleDeleteRequest = (e, set) => {
         e.stopPropagation();
@@ -116,13 +139,86 @@ const FlashcardManager = ({ documentId }) => {
         }
     };
 
+    const handleRenameRequest = (e, set) => {
+        e.stopPropagation();
+        setRenamingId(set._id);
+        setRenameValue(set.title || 'Flashcard Set');
+    };
+
+    const handleConfirmRename = async (e, setId) => {
+        e.stopPropagation();
+        if (!renameValue.trim()) return;
+        try {
+            await flashcardService.renameFlashcardSet(setId, renameValue.trim());
+            setFlashcardSets(prev => prev.map(s =>
+                s._id === setId ? { ...s, title: renameValue.trim() } : s
+            ));
+            toast.success("Flashcard set renamed successfully");
+            setRenamingId(null);
+        } catch (error) {
+            toast.error("Failed to rename flashcard set");
+        }
+    };
+
     const handleSelectSet = (set) => {
         setSelectedSet(set);
         setCurrentCardIndex(0);
     };
 
     const renderFlashcardSets = () => {
-        return "renderFlashcardViewer";
+        const currentCard = selectedSet.cards[currentCardIndex];
+
+        return (
+          <div className="space-y-8">
+            <button
+              onClick={() => setSelectedSet(null)}
+              className="group inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors duration-200"
+            >
+              <ArrowLeft
+                className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200"
+                strokeWidth={2}
+              />
+              Back to Sets
+            </button>
+
+            <div className="flex flex-col items-center justify-center space-y-8">
+                <div className="w-full max-w-2xl">
+                    <Flashcard
+                        flashcard={currentCard}
+                        onToggleStar={handleToggleStar}
+                    />
+                </div>
+
+                <div className="flex items-center justify-between gap-4 mt-6">
+                    <button
+                       onClick={handlePrevCard}
+                       disabled={selectedSet.cards.length <= 1}
+                       className="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-orange-50 border border-orange-100 text-slate-600 text-sm font-medium hover:bg-orange-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    >
+                        <ChevronLeft className="w-4 h-4" strokeWidth={2.5} />
+                        Previous
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                        <span className="text-sm font-medium text-slate-700">
+                            {currentCardIndex + 1}
+                            <span className="text-slate-400 mx-1">of</span>
+                            {selectedSet.cards.length}
+                        </span>
+                    </div>
+
+                    <button
+                        onClick={handleNextCard}
+                        disabled={selectedSet.cards.length <= 1}
+                        className="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-medium shadow-md shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    >
+                       Next
+                       <ChevronRight className="w-4 h-4" strokeWidth={2.5} />
+                    </button>
+                </div>
+            </div>
+        </div>
+        );
     };
 
     const renderSetList = () => {
@@ -169,7 +265,6 @@ const FlashcardManager = ({ documentId }) => {
 
         return (
             <div className="p-6 space-y-6">
-                {/* Header with Generate Button */}
                 <div className="flex items-center justify-between">
                     <div>
                         <h3 className="text-lg font-semibold text-slate-800">
@@ -199,21 +294,28 @@ const FlashcardManager = ({ documentId }) => {
                     </button>
                 </div>
 
-                {/* Flashcard Set List */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {flashcardSets.map((set) => (
                         <div
                             key={set._id}
-                            onClick={() => handleSelectSet(set)}
+                            onClick={() => renamingId === set._id ? null : handleSelectSet(set)}
                             className="relative bg-white border border-orange-100 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-orange-200 cursor-pointer transition-all flex flex-col gap-3"
                         >
-                            {/* Delete Button */}
-                            <button
-                                onClick={(e) => handleDeleteRequest(e, set)}
-                                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
-                            >
-                                <Trash2 className="w-4 h-4" strokeWidth={2.5} />
-                            </button>
+                            {/* Action Buttons */}
+                            <div className="absolute top-3 right-3 flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                                <button
+                                    onClick={(e) => handleRenameRequest(e, set)}
+                                    className="w-8 h-8 flex items-center justify-center rounded-xl text-slate-400 hover:text-orange-500 hover:bg-orange-50 transition-all"
+                                >
+                                    <Pencil className="w-3.5 h-3.5" strokeWidth={2} />
+                                </button>
+                                <button
+                                    onClick={(e) => handleDeleteRequest(e, set)}
+                                    className="w-8 h-8 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                                >
+                                    <Trash2 className="w-3.5 h-3.5" strokeWidth={2} />
+                                </button>
+                            </div>
 
                             {/* Icon */}
                             <div className="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center">
@@ -222,9 +324,30 @@ const FlashcardManager = ({ documentId }) => {
 
                             {/* Title & Date */}
                             <div>
-                                <h4 className="text-base font-semibold text-slate-800">
-                                    Flashcard Set
-                                </h4>
+                                {renamingId === set._id ? (
+                                    <div className="flex items-center gap-2 mt-1" onClick={e => e.stopPropagation()}>
+                                        <input
+                                            autoFocus
+                                            value={renameValue}
+                                            onChange={e => setRenameValue(e.target.value)}
+                                            className="flex-1 text-sm bg-white border border-orange-200 rounded-lg px-2 py-1 outline-none focus:ring-1 focus:ring-orange-300"
+                                            onKeyDown={e => {
+                                                if (e.key === 'Enter') handleConfirmRename(e, set._id);
+                                                if (e.key === 'Escape') setRenamingId(null);
+                                            }}
+                                        />
+                                        <button onClick={(e) => handleConfirmRename(e, set._id)} className="text-orange-500 hover:text-orange-700">
+                                            <Check className="w-4 h-4" />
+                                        </button>
+                                        <button onClick={(e) => { e.stopPropagation(); setRenamingId(null); }} className="text-slate-400 hover:text-slate-600">
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <h4 className="text-base font-semibold text-slate-800">
+                                        {set.title || 'Flashcard Set'}
+                                    </h4>
+                                )}
                                 <p className="text-xs text-slate-400 uppercase tracking-wide mt-0.5">
                                     Created {moment(set.createdAt).format("MMM D, YYYY")}
                                 </p>
@@ -282,7 +405,7 @@ const FlashcardManager = ({ documentId }) => {
                 ) : (
                     "Delete Set"
                 )}
-                </button>
+            </button>
             </div>
         </div>
     </Modal>

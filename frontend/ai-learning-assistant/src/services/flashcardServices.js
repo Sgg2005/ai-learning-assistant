@@ -46,12 +46,22 @@ const deleteFlashcardSet = async (id) => {
   }
 };
 
+const renameFlashcardSet = async (id, title) => {
+    try {
+        const response = await axiosInstance.put(API_PATHS.FLASHCARDS.RENAME_FLASHCARD_SET(id), { title });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { message: 'Failed to rename flashcard set' };
+    }
+};
+
 const flashcardService = {
-  getAllFlashcardSets,
-  getFlashcardsForDocument,
-  reviewFlashcard,
-  toggleStar,
-  deleteFlashcardSet,
+    getAllFlashcardSets,
+    getFlashcardsForDocument,
+    reviewFlashcard,
+    toggleStar,
+    deleteFlashcardSet,
+    renameFlashcardSet,
 };
 
 export default flashcardService;

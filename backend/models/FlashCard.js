@@ -11,6 +11,10 @@ const flashcardSchema = new mongoose.Schema({
             ref: 'Document',
             required: [true],
         },
+        title: {
+            type: String,
+            default: 'Flashcard Set'
+        },
         cards: [{
             question: {type: String, required: [true]},
             answer: {type: String, required: [true]},
@@ -31,16 +35,13 @@ const flashcardSchema = new mongoose.Schema({
                 type: Boolean,
                 default: false
             },
-        },
-  ],
+        }],
     },
-{
-    timestamps: true
-
-}
+    {
+        timestamps: true
+    }
 );
 
-//1 flashcard set per user per document
 flashcardSchema.index({ userId: 1, documentId: 1 });
 
 const FlashCard = mongoose.model("FlashCard", flashcardSchema);

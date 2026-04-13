@@ -159,3 +159,42 @@ export const deleteFlashcardSet = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Rename a flashcard set
+// @route   PUT /api/flashcards/:id/rename
+// @access  Private
+export const renameFlashcardSet = async (req, res, next) => {
+    try {
+        const { title } = req.body;
+
+        if (!title) {
+            return res.status(400).json({
+                success: false,
+                error: 'Please provide a title',
+                statusCode: 400
+            });
+        }
+
+        const flashcardSet = await FlashCard.findOneAndUpdate(
+            { _id: req.params.id, userId: req.user._id },
+            { title },
+            { new: true }
+        );
+
+        if (!flashcardSet) {
+            return res.status(404).json({
+                success: false,
+                error: 'Flashcard set not found',
+                statusCode: 404
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: flashcardSet,
+            message: 'Flashcard set renamed successfully'
+        });
+    } catch (error) {
+        next(error);
+    }
+};
