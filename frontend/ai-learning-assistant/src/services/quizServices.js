@@ -1,5 +1,5 @@
 import axiosInstance from '../utils/axiosInstance';
-import { API_PATHS } from '../utils/apiPaths';
+import { API_PATHS } from '../utils/apiPath';
 
 const getQuizzesForDocument = async (documentId) => {
   try {
@@ -46,12 +46,22 @@ const deleteQuiz = async (quizId) => {
   }
 };
 
+const renameQuiz = async (quizId, title) => {
+  try {
+    const response = await axiosInstance.patch(API_PATHS.QUIZZES.RENAME_QUIZ(quizId), { title });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Failed to rename quiz' };
+  }
+};
+
 const quizService = {
   getQuizzesForDocument,
   getQuizById,
   submitQuiz,
   getQuizResults,
   deleteQuiz,
+  renameQuiz,
 };
 
 export default quizService;

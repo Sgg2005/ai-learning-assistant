@@ -4,13 +4,13 @@ import {
     getQuizById,
     submitQuiz,
     getQuizResults,
-    deleteQuiz
+    deleteQuiz,
+    renameQuiz  
 } from '../controllers/quizController.js';
 import protect from '../middleware/auth.js';
 
 const router = express.Router();
 
-//all routes are protected
 router.use(protect);
 
 router.get('/:documentId', getQuizzes);
@@ -18,5 +18,6 @@ router.get('/quiz/:id', getQuizById);
 router.post('/submit/:quizId', submitQuiz);
 router.get('/results/:quizId', getQuizResults);
 router.delete('/:id', deleteQuiz);
+router.patch('/:id/rename', renameQuiz);  
 
-export default router; 
+export default router;
