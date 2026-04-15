@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import NotFoundPage from './pages/NotFoundPage';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
-import VerifyEmailPage from './pages/Auth/VerifyEmailPage'; // <-- add this
+import VerifyEmailPage from './pages/Auth/VerifyEmailPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import ProfilePage from './pages/Profile/ProfilePage';
@@ -33,7 +33,7 @@ const App = () => {
         <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/verify-email" element={<VerifyEmailPage />} /> {/* <-- add this */}
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
 
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
@@ -43,8 +43,8 @@ const App = () => {
           <Route path="/documents/:id" element={<DocumentDetailPage />} />
           <Route path="/flashcards" element={<FlashcardsListPage />} />
           <Route path="/flashcards/:id" element={<FlashCardPage />} />
-          <Route path="/quizzes/take/:id" element={<QuizTakePage />} />
-          <Route path="/quizzes/result/:id" element={<QuizResultPage />} />
+          <Route path="/quizzes/take/:quizId" element={<QuizTakePage />} />
+          <Route path="/quizzes/:quizId/results" element={<QuizResultPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

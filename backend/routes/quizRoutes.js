@@ -13,11 +13,11 @@ const router = express.Router();
 
 router.use(protect);
 
-router.get('/:documentId', getQuizzes);
 router.get('/quiz/:id', getQuizById);
-router.post('/submit/:quizId', submitQuiz);
 router.get('/results/:quizId', getQuizResults);
+router.post('/:quizId/submit', submitQuiz);
+router.patch('/:id/rename', renameQuiz);
 router.delete('/:id', deleteQuiz);
-router.patch('/:id/rename', renameQuiz);  
+router.get('/:documentId', getQuizzes);
 
 export default router;
