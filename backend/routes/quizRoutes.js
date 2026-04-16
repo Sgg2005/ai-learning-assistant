@@ -14,7 +14,7 @@ const router = express.Router();
 router.use(protect);
 
 router.get('/quiz/:id', getQuizById);
-router.get('/results/:quizId', getQuizResults);
+router.get('/:quizId/results', getQuizResults);
 router.post('/:quizId/submit', submitQuiz);
 router.patch('/:id/rename', renameQuiz);
 router.delete('/:id', deleteQuiz);
