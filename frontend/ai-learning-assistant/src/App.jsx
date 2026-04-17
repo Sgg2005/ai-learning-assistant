@@ -41,6 +41,7 @@ const App = () => {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/documents" element={<DocumentListPage />} />
           <Route path="/documents/:id" element={<DocumentDetailPage />} />
+          <Route path="/documents/:id/flashcards" element={<FlashCardPage />} /> {/* add this */}
           <Route path="/flashcards" element={<FlashcardsListPage />} />
           <Route path="/flashcards/:id" element={<FlashCardPage />} />
           <Route path="/quizzes/take/:quizId" element={<QuizTakePage />} />

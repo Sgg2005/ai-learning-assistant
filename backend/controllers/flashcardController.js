@@ -1,48 +1,49 @@
 import FlashCard from '../models/FlashCard.js'
 
-//@desc    Create a flashcard
-//@route   POST /api/flashcards
-//@access  Private
-export const getFlashcards = async (req, res, next) => {
-    try{
-        const flashcards = await FlashCard.find({
-            userId: req.user._id,
-            documentId: req.query.documentId
-        })
-          .populate('documentId', 'title')
-          .sort({ createdAt: -1 });
-        
-        res.status(200).json({
-            success: true,
-            count: flashcards.length,
-            data: flashcards
-        });
-    }catch (error) {
-        next(error);
-    }
-};
-
-// @desc    Get all flashcard sets for a document
+// @desc    Get flashcards for a single document
 // @route   GET /api/flashcards/:documentId
 // @access  Private
-export const getAllFlashcardSets = async (req, res, next) => {
-    try {
-        const flashcardSets = await FlashCard.find({
-            userId: req.user._id,
-            documentId: req.params.documentId
-        })
-        .populate('documentId', 'title')
-        .sort({ createdAt: -1 });
+export const getFlashcards = async (req, res, next) => {
+  try {
+    const documentId = req.params.documentId || req.query.documentId;
 
-        res.status(200).json({
-            success: true,
-            count: flashcardSets.length,
-            data: flashcardSets
-        });
-    } catch (error) {
-        next(error);
-    }
-};  
+    const flashcards = await FlashCard.find({
+      userId: req.user._id,
+      documentId
+    })
+      .populate('documentId', 'title')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: flashcards.length,
+      data: flashcards
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get all flashcard sets
+// @route   GET /api/flashcards
+// @access  Private
+export const getAllFlashcardSets = async (req, res, next) => {
+  try {
+    const flashcardSets = await FlashCard.find({
+      userId: req.user._id
+    })
+      .populate('documentId', 'title')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: flashcardSets.length,
+      data: flashcardSets
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // @desc    Review a flashcard (update review stats)
 // @route   POST /api/flashcards/:cardId/review
