@@ -1,14 +1,18 @@
 import React, { useState } from 'react'
 import {Link} from 'react-router-dom'
-import {Play, BarChart2, Trash2, Award, Pencil} from 'lucide-react'
+import {Play, BarChart2, Trash2, Award, Pencil, RotateCcw} from 'lucide-react'
 import moment from 'moment'
 import quizService from '../../services/quizServices'
+import aiService from '../../services/aiService'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
-const Quizcard = ({quiz, onDelete, onRename}) => {
+const Quizcard = ({quiz, onDelete, onRename, onRefresh}) => {
+  const navigate = useNavigate();
   const [isRenaming, setIsRenaming] = useState(false);
   const [newTitle, setNewTitle] = useState(quiz.title || '');
   const [saving, setSaving] = useState(false);
+  const [retaking, setRetaking] = useState(false);
 
   const handleRename = async () => {
     if (!newTitle.trim() || newTitle === quiz.title) {
@@ -25,6 +29,23 @@ const Quizcard = ({quiz, onDelete, onRename}) => {
       toast.error('Failed to rename quiz');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleRetake = async (e) => {
+    e.stopPropagation();
+    setRetaking(true);
+    try {
+        const response = await aiService.generateQuiz(quiz.documentId, {
+            questionCount: quiz.totalQuestions
+        });
+        toast.success('New quiz generated!');
+        if (onRefresh) onRefresh();
+        navigate(`/quizzes/take/${response.data._id}`);
+    } catch (error) {
+        toast.error('Failed to generate new quiz');
+    } finally {
+        setRetaking(false);
     }
   };
 
@@ -79,14 +100,33 @@ const Quizcard = ({quiz, onDelete, onRename}) => {
             </div>
         </div>
 
-        <div className="mt-auto pt-3 border-t border-orange-50">
+        <div className="mt-auto pt-3 border-t border-orange-50 flex flex-col gap-2">
             {quiz?.userAnswers?.length > 0 ? (
-                <Link to={`/quizzes/${quiz._id}/results`}>
-                   <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-orange-50 border border-orange-100 text-orange-500 text-sm font-medium hover:bg-orange-100 transition-all">
-                      <BarChart2 className="w-4 h-4" strokeWidth={2.5} />
-                      View Results
+                <>
+                    <Link to={`/quizzes/${quiz._id}/results`}>
+                        <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-orange-50 border border-orange-100 text-orange-500 text-sm font-medium hover:bg-orange-100 transition-all">
+                            <BarChart2 className="w-4 h-4" strokeWidth={2.5} />
+                            View Results
+                        </button>
+                    </Link>
+                    <button
+                        onClick={handleRetake}
+                        disabled={retaking}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-medium shadow-md shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    >
+                        {retaking ? (
+                            <>
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                Generating...
+                            </>
+                        ) : (
+                            <>
+                                <RotateCcw className="w-4 h-4" strokeWidth={2.5} />
+                                Retake with New Questions
+                            </>
+                        )}
                     </button>
-                </Link>
+                </>
             ) : (
                 <Link to={`/quizzes/take/${quiz._id}`}>
                     <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-medium shadow-md shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] transition-all">

@@ -15,6 +15,7 @@ import {
   FolderOpen,
   ClipboardList
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const DashboardPage = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -104,7 +105,7 @@ const DashboardPage = () => {
       id: quiz._id,
       description: quiz.title,
       timestamp: quiz.completedAt,
-      link: `/quizzes/${quiz._id}`,
+      link: `/quizzes/${quiz._id}/results`,
       type: 'quiz'
     }))
   ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -129,22 +130,22 @@ const DashboardPage = () => {
 
   const quickActions = [
     {
-      label: 'Upload Document',
-      href: '/documents',
-      icon: FolderOpen,
-      gradient: 'from-blue-500 to-cyan-500'
+        label: 'Upload Document',
+        href: '/documents',
+        icon: FolderOpen,
+        gradient: 'from-blue-500 to-cyan-500'
     },
     {
-      label: 'Open Flashcards',
-      href: '/flashcards',
-      icon: BookOpen,
-      gradient: 'from-purple-500 to-pink-500'
+        label: 'Open Flashcards',
+        href: '/flashcards',
+        icon: BookOpen,
+        gradient: 'from-purple-500 to-pink-500'
     },
     {
-      label: 'Start Quiz',
-      href: '/quizzes',
-      icon: ClipboardList,
-      gradient: 'from-orange-500 to-red-500'
+        label: 'Start Quiz',
+        href: '/documents',
+        icon: ClipboardList,
+        gradient: 'from-orange-500 to-red-500'
     }
   ];
 
@@ -354,14 +355,14 @@ const DashboardPage = () => {
                 </div>
 
                 {activity.link && (
-                  <a
-                    href={activity.link}
-                    className="inline-flex items-center gap-1 text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
-                  >
-                    View
+                <Link
+                  to={activity.link}
+                  className="inline-flex items-center gap-1 text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+                >
+                  View
                     <ArrowRight className="w-4 h-4" />
-                  </a>
-                )}
+                </Link>
+                 )}
               </div>
             ))}
           </div>

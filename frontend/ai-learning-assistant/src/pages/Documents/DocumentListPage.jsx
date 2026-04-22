@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Upload, FileText, X, Trash2, AlertTriangle } from "lucide-react";
+import { Plus, Upload, FileText, X, Trash2, Search } from "lucide-react";
 import toast from "react-hot-toast";
 
 import documentService from "../../services/documentServices";
@@ -9,6 +9,7 @@ import DocumentCard from "../../components/documents/DocumentCard";
 const DocumentListPage = () => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // state for upload modal
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -37,6 +38,10 @@ const DocumentListPage = () => {
   useEffect(() => {
     fetchDocuments();
   }, []);
+
+  const filteredDocuments = documents.filter((doc) =>
+    doc.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -139,9 +144,25 @@ const DocumentListPage = () => {
       );
     }
 
+    if (filteredDocuments.length === 0) {
+      return (
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-orange-50 border border-orange-100 mb-4">
+              <Search className="w-8 h-8 text-orange-400" strokeWidth={1.5} />
+            </div>
+            <h3 className="text-slate-900 font-semibold text-lg mb-2">No Results Found</h3>
+            <p className="text-slate-500 text-sm">
+              No documents match "<span className="font-medium text-slate-700">{searchQuery}</span>". Try a different search.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {documents.map((doc) => (
+        {filteredDocuments.map((doc) => (
           <DocumentCard
             key={doc._id}
             document={doc}
@@ -158,7 +179,7 @@ const DocumentListPage = () => {
 
       <div className="relative">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">My Documents</h1>
             <p className="text-slate-500 text-sm mt-1">
@@ -176,6 +197,28 @@ const DocumentListPage = () => {
             </button>
           )}
         </div>
+
+        {/* Search Bar */}
+        {documents.length > 0 && (
+          <div className="relative mb-6">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" strokeWidth={2} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search documents..."
+              className="w-full h-11 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 placeholder:text-slate-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X className="w-4 h-4" strokeWidth={2} />
+              </button>
+            )}
+          </div>
+        )}
 
         {renderContent()}
       </div>
@@ -274,55 +317,51 @@ const DocumentListPage = () => {
 
       {/* Delete Modal */}
       {isDeleteModalOpen && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl shadow-xl w-full max-w-md p-8 relative">
-              {/* Close */}
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-xl w-full max-w-md p-8 relative">
+            <button
+              onClick={() => !deleting && setIsDeleteModalOpen(false)}
+              disabled={deleting}
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors duration-200 disabled:opacity-60"
+            >
+              <X className="w-5 h-5" strokeWidth={2} />
+            </button>
+
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-red-50 mb-5">
+              <Trash2 className="w-6 h-6 text-red-500" strokeWidth={2} />
+            </div>
+
+            <h2 className="text-3xl font-semibold text-slate-900 tracking-tight mb-4">
+              Confirm Deletion
+            </h2>
+            <p className="text-slate-600 text-base leading-relaxed mb-8">
+              Are you sure you want to delete the document:{" "}
+              <span className="font-semibold text-slate-900">{selectedDoc?.title}</span>?{" "}
+              This action cannot be undone.
+            </p>
+
+            <div className="flex gap-3">
               <button
-                onClick={() => !deleting && setIsDeleteModalOpen(false)}
+                type="button"
+                onClick={() => setIsDeleteModalOpen(false)}
                 disabled={deleting}
-                className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors duration-200 disabled:opacity-60"
+                className="flex-1 h-12 border-2 border-slate-200 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-colors duration-200 disabled:opacity-60"
               >
-                <X className="w-5 h-5" strokeWidth={2} />
+                Cancel
               </button>
 
-              {/* Icon */}
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-red-50 mb-5">
-                <Trash2 className="w-6 h-6 text-red-500" strokeWidth={2} />
-              </div>
-
-              {/* Title + message */}
-              <h2 className="text-3xl font-semibold text-slate-900 tracking-tight mb-4">
-                Confirm Deletion
-              </h2>
-              <p className="text-slate-600 text-base leading-relaxed mb-8">
-                Are you sure you want to delete the document:{" "}
-                <span className="font-semibold text-slate-900">{selectedDoc?.title}</span>?{" "}
-                This action cannot be undone.
-              </p>
-
-              {/* Actions */}
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsDeleteModalOpen(false)}
-                  disabled={deleting}
-                  className="flex-1 h-12 border-2 border-slate-200 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-colors duration-200 disabled:opacity-60"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleConfirmDelete}
-                  disabled={deleting}
-                  className="flex-1 h-12 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl shadow-lg shadow-red-500/25 transition-all duration-200 disabled:opacity-60"
-                >
-                  {deleting ? "Deleting..." : "Delete"}
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={deleting}
+                className="flex-1 h-12 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl shadow-lg shadow-red-500/25 transition-all duration-200 disabled:opacity-60"
+              >
+                {deleting ? "Deleting..." : "Delete"}
+              </button>
             </div>
           </div>
-         )}
+        </div>
+      )}
     </div>
   );
 };
