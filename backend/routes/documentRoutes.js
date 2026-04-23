@@ -3,7 +3,8 @@ import {
     uploadDocument,
     getDocuments,
     getDocument,
-    deleteDocument
+    deleteDocument,
+    updateNotes
 } from '../controllers/documentController.js';
 import protect from '../middleware/auth.js';
 import upload from '../middleware/upload.js';
@@ -17,5 +18,6 @@ router.post('/upload', upload.single('file'), uploadDocument);
 router.get('/', getDocuments);
 router.get('/:id', getDocument);
 router.delete('/:id', deleteDocument);
+router.patch('/:id/notes', protect, updateNotes);
 
 export default router;

@@ -41,11 +41,21 @@ const getDocumentById = async (id) => {
   }
 };
 
+const updateNotes = async (id, notes) => {
+    try {
+        const response = await axiosInstance.patch(API_PATHS.DOCUMENTS.UPDATE_NOTES(id), { notes });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { message: 'Failed to update notes' };
+    }
+};
+
 const documentService = {
   getDocuments,
   uploadDocument,
   deleteDocument,
   getDocumentById,
+  updateNotes,
 };
 
 export default documentService;

@@ -13,7 +13,8 @@ import {
   Target,
   Zap,
   FolderOpen,
-  ClipboardList
+  ClipboardList,
+  Flame
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -63,14 +64,47 @@ const DashboardPage = () => {
   const weeklyProgress = Math.min(totalResources, weeklyGoal);
   const progressPercentage = Math.min((weeklyProgress / weeklyGoal) * 100, 100);
 
+  // Calculate streak from activity timestamps
+  const calculateStreak = () => {
+    const allTimestamps = [
+      ...(dashboardData.recentActivity?.documents || []).map(d => d.uploadDate),
+      ...(dashboardData.recentActivity?.quizzes || []).map(q => q.completedAt),
+    ].filter(Boolean).map(t => new Date(t).toDateString());
+
+    const uniqueDays = [...new Set(allTimestamps)].map(d => new Date(d)).sort((a, b) => b - a);
+
+    if (uniqueDays.length === 0) return 0;
+
+    let streak = 0;
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+    if (uniqueDays[0].toDateString() !== today && uniqueDays[0].toDateString() !== yesterday) {
+      return 0;
+    }
+
+    let currentDate = new Date(uniqueDays[0]);
+    for (let i = 0; i < uniqueDays.length; i++) {
+      const expectedDate = new Date(currentDate);
+      expectedDate.setDate(expectedDate.getDate() - i);
+      if (uniqueDays[i].toDateString() === expectedDate.toDateString()) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+
+    return streak;
+  };
+
+  const streak = calculateStreak();
+
   const stats = [
     {
       label: 'Total Documents',
       value: totalDocuments,
       icon: FileText,
       gradient: 'from-blue-500 to-cyan-500',
-      bg: 'bg-blue-50',
-      iconColor: 'text-blue-600',
       subtext: 'Your uploaded study materials'
     },
     {
@@ -78,8 +112,6 @@ const DashboardPage = () => {
       value: totalFlashcards,
       icon: BookOpen,
       gradient: 'from-purple-500 to-pink-500',
-      bg: 'bg-purple-50',
-      iconColor: 'text-purple-600',
       subtext: 'Cards generated for revision'
     },
     {
@@ -87,8 +119,6 @@ const DashboardPage = () => {
       value: totalQuizzes,
       icon: BrainCircuit,
       gradient: 'from-orange-500 to-red-500',
-      bg: 'bg-orange-50',
-      iconColor: 'text-orange-600',
       subtext: 'Quizzes completed or created'
     }
   ];
@@ -114,38 +144,41 @@ const DashboardPage = () => {
     {
       title: 'Generate flashcards from your latest document',
       description: 'Turn your uploaded notes into quick revision cards.',
-      icon: Sparkles
+      icon: Sparkles,
+      link: '/flashcards'
     },
     {
       title: 'Create a quiz to test your understanding',
       description: 'Use AI to build a short quiz from your learning material.',
-      icon: BrainCircuit
+      icon: BrainCircuit,
+      link: '/documents'
     },
     {
       title: 'Track weak areas and revise smarter',
       description: 'Focus on the topics where you need the most improvement.',
-      icon: Target
+      icon: Target,
+      link: '/documents'
     }
   ];
 
   const quickActions = [
     {
-        label: 'Upload Document',
-        href: '/documents',
-        icon: FolderOpen,
-        gradient: 'from-blue-500 to-cyan-500'
+      label: 'Upload Document',
+      href: '/documents',
+      icon: FolderOpen,
+      gradient: 'from-blue-500 to-cyan-500'
     },
     {
-        label: 'Open Flashcards',
-        href: '/flashcards',
-        icon: BookOpen,
-        gradient: 'from-purple-500 to-pink-500'
+      label: 'Open Flashcards',
+      href: '/flashcards',
+      icon: BookOpen,
+      gradient: 'from-purple-500 to-pink-500'
     },
     {
-        label: 'Start Quiz',
-        href: '/documents',
-        icon: ClipboardList,
-        gradient: 'from-orange-500 to-red-500'
+      label: 'Start Quiz',
+      href: '/documents',
+      icon: ClipboardList,
+      gradient: 'from-orange-500 to-red-500'
     }
   ];
 
@@ -153,9 +186,7 @@ const DashboardPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-          Dashboard
-        </h1>
+        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
         <p className="text-slate-500 text-sm mt-1">
           Track your learning progress, activity, and AI-powered study support
         </p>
@@ -165,44 +196,98 @@ const DashboardPage = () => {
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-orange-500 p-8 mb-8 shadow-lg">
         <div className="absolute top-0 right-0 w-56 h-56 bg-white/10 rounded-full blur-3xl -translate-y-10 translate-x-10" />
         <div className="absolute bottom-0 left-0 w-40 h-40 bg-orange-300/20 rounded-full blur-2xl translate-y-10 -translate-x-8" />
-
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-white text-xs font-medium mb-4 backdrop-blur-sm">
               <Sparkles className="w-4 h-4" />
               AI Learning Assistant
             </div>
-
-            <h2 className="text-2xl md:text-3xl font-bold text-white">
-              Welcome back 👋
-            </h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-white">Welcome back 👋</h2>
             <p className="text-white/80 text-sm md:text-base mt-2 max-w-xl">
               You currently have <span className="font-semibold text-white">{totalResources}</span>{' '}
-              learning resources in your workspace. Keep building your study system
-              and let AI help you revise faster.
+              learning resources in your workspace. Keep building your study system and let AI help you revise faster.
             </p>
           </div>
-
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 min-w-[280px] border border-white/10">
             <div className="flex items-center justify-between mb-2">
               <p className="text-white text-sm font-medium">Weekly Learning Goal</p>
-              <span className="text-xs text-white/80">
-                {weeklyProgress}/{weeklyGoal}
-              </span>
+              <span className="text-xs text-white/80">{weeklyProgress}/{weeklyGoal}</span>
             </div>
-
             <div className="w-full h-3 bg-white/15 rounded-full overflow-hidden mb-3">
               <div
                 className="h-full bg-white rounded-full transition-all duration-500"
                 style={{ width: `${progressPercentage}%` }}
               />
             </div>
-
             <p className="text-xs text-white/75">
               {progressPercentage >= 100
                 ? 'Great job — your weekly goal is complete.'
                 : 'Keep going — you are making steady progress.'}
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Streak Tracker */}
+      <div className="bg-white border border-slate-200/70 rounded-3xl p-6 shadow-sm mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-md">
+            <Flame className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-slate-900">Study Streak</h3>
+            <p className="text-sm text-slate-500">Keep studying every day to maintain your streak</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-6">
+          <div className="flex flex-col items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100">
+            <span className="text-4xl font-bold text-orange-500">{streak}</span>
+            <span className="text-xs font-medium text-slate-500 mt-1">{streak === 1 ? 'day' : 'days'}</span>
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-slate-800 mb-1">
+              {streak === 0 && 'No streak yet — start studying today!'}
+              {streak === 1 && 'Great start! Come back tomorrow to keep it going.'}
+              {streak >= 2 && streak < 7 && `${streak} days in a row! Keep it up!`}
+              {streak >= 7 && streak < 30 && `🔥 ${streak} day streak! You're on fire!`}
+              {streak >= 30 && `🏆 ${streak} day streak! Incredible dedication!`}
+            </p>
+            <p className="text-xs text-slate-400">
+              {streak === 0
+                ? 'Upload a document, create flashcards, or complete a quiz to start your streak.'
+                : 'Study at least once a day to keep your streak alive.'}
+            </p>
+            {/* Last 7 days indicator */}
+            <div className="flex items-center gap-1.5 mt-3">
+              {Array.from({ length: 7 }).map((_, i) => {
+                const day = new Date();
+                day.setDate(day.getDate() - (6 - i));
+                const dayStr = day.toDateString();
+                const allDays = [
+                  ...(dashboardData.recentActivity?.documents || []).map(d => new Date(d.uploadDate).toDateString()),
+                  ...(dashboardData.recentActivity?.quizzes || []).map(q => new Date(q.completedAt).toDateString()),
+                ];
+                const wasActive = allDays.includes(dayStr);
+                const isToday = dayStr === new Date().toDateString();
+                return (
+                  <div key={i} className="flex flex-col items-center gap-1">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold ${
+                      wasActive
+                        ? 'bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-md shadow-orange-200'
+                        : isToday
+                        ? 'bg-orange-50 border-2 border-orange-300 text-orange-400'
+                        : 'bg-slate-100 text-slate-400'
+                    }`}>
+                      {wasActive ? '✓' : isToday ? '·' : ''}
+                    </div>
+                    <span className="text-xs text-slate-400">
+                      {day.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -216,17 +301,13 @@ const DashboardPage = () => {
           >
             <div className="flex items-start justify-between mb-5">
               <div>
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  {stat.label}
-                </p>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{stat.label}</p>
                 <h3 className="text-3xl font-bold text-slate-900 mt-3">{stat.value}</h3>
               </div>
-
               <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-md`}>
                 <stat.icon className="w-5 h-5 text-white" strokeWidth={2.2} />
               </div>
             </div>
-
             <p className="text-sm text-slate-500">{stat.subtext}</p>
           </div>
         ))}
@@ -242,16 +323,15 @@ const DashboardPage = () => {
             </div>
             <div>
               <h3 className="text-base font-semibold text-slate-900">AI Suggestions</h3>
-              <p className="text-sm text-slate-500">
-                Smart actions to help you study more effectively
-              </p>
+              <p className="text-sm text-slate-500">Smart actions to help you study more effectively</p>
             </div>
           </div>
 
           <div className="space-y-4">
             {aiSuggestions.map((item, index) => (
-              <div
+              <Link
                 key={index}
+                to={item.link}
                 className="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 hover:bg-slate-50 transition-colors"
               >
                 <div className="flex items-start gap-3">
@@ -263,12 +343,11 @@ const DashboardPage = () => {
                     <p className="text-xs text-slate-500 mt-1">{item.description}</p>
                   </div>
                 </div>
-
-                <button className="shrink-0 inline-flex items-center gap-1 text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors">
+                <span className="shrink-0 inline-flex items-center gap-1 text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors">
                   Try now
                   <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
+                </span>
+              </Link>
             ))}
           </div>
         </div>
@@ -287,9 +366,9 @@ const DashboardPage = () => {
 
           <div className="space-y-3">
             {quickActions.map((action, index) => (
-              <a
+              <Link
                 key={index}
-                href={action.href}
+                to={action.href}
                 className="flex items-center justify-between rounded-2xl border border-slate-200 p-4 hover:bg-slate-50 transition-colors"
               >
                 <div className="flex items-center gap-3">
@@ -299,7 +378,7 @@ const DashboardPage = () => {
                   <span className="text-sm font-medium text-slate-800">{action.label}</span>
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-400" />
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -313,9 +392,7 @@ const DashboardPage = () => {
           </div>
           <div>
             <h3 className="text-base font-semibold text-slate-900">Recent Activity</h3>
-            <p className="text-sm text-slate-500">
-              Your latest learning interactions
-            </p>
+            <p className="text-sm text-slate-500">Your latest learning interactions</p>
           </div>
         </div>
 
@@ -327,42 +404,34 @@ const DashboardPage = () => {
                 className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200/70 hover:border-orange-200 hover:bg-orange-50/50 transition-all duration-200"
               >
                 <div className="flex items-center gap-4">
-                  <div
-                    className={`w-11 h-11 rounded-2xl flex items-center justify-center ${
-                      activity.type === 'document'
-                        ? 'bg-blue-100'
-                        : 'bg-orange-100'
-                    }`}
-                  >
+                  <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${
+                    activity.type === 'document' ? 'bg-blue-100' : 'bg-orange-100'
+                  }`}>
                     {activity.type === 'document' ? (
                       <FileText className="w-5 h-5 text-blue-600" />
                     ) : (
                       <BrainCircuit className="w-5 h-5 text-orange-600" />
                     )}
                   </div>
-
                   <div>
                     <p className="text-sm font-medium text-slate-900">
                       {activity.type === 'document' ? 'Accessed Document' : 'Attempted Quiz'}
                     </p>
                     <p className="text-sm text-slate-600">{activity.description}</p>
                     <p className="text-xs text-slate-400 mt-1">
-                      {activity.timestamp
-                        ? new Date(activity.timestamp).toLocaleString()
-                        : 'Invalid Date'}
+                      {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : 'Invalid Date'}
                     </p>
                   </div>
                 </div>
-
                 {activity.link && (
-                <Link
-                  to={activity.link}
-                  className="inline-flex items-center gap-1 text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
-                >
-                  View
+                  <Link
+                    to={activity.link}
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+                  >
+                    View
                     <ArrowRight className="w-4 h-4" />
-                </Link>
-                 )}
+                  </Link>
+                )}
               </div>
             ))}
           </div>

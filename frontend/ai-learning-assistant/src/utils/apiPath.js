@@ -16,6 +16,7 @@ export const API_PATHS = {
     GET_DOCUMENT_BY_ID: (id) => `/api/documents/${id}`,
     UPDATE_DOCUMENT: (id) => `/api/documents/${id}`,
     DELETE_DOCUMENT: (id) => `/api/documents/${id}`,
+    UPDATE_NOTES: (id) => `/api/documents/${id}/notes`,
   },
 
   AI: {

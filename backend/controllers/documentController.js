@@ -221,3 +221,21 @@ export const deleteDocument = async (req, res, next) => {
     next(error);
     }
 };
+
+// @desc    Update document notes
+// @route   PATCH /api/documents/:id/notes
+// @access  Private
+export const updateNotes = async (req, res, next) => {
+    try {
+        const { notes } = req.body;
+        const document = await Document.findOneAndUpdate(
+            { _id: req.params.id, userId: req.user._id },
+            { notes },
+            { new: true }
+        );
+        if (!document) return res.status(404).json({ success: false, error: 'Document not found' });
+        res.status(200).json({ success: true, data: document });
+    } catch (error) {
+        next(error);
+    }
+};

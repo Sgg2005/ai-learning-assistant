@@ -49,6 +49,11 @@ const Quizcard = ({quiz, onDelete, onRename, onRefresh}) => {
     }
   };
 
+  const answeredCount = quiz?.userAnswers?.length || 0;
+  const completionPercentage = quiz.questions.length > 0
+    ? Math.round((answeredCount / quiz.questions.length) * 100)
+    : 0;
+
   return (
     <>
     <div className="relative bg-white border border-orange-100 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-orange-200 transition-all flex flex-col gap-4">
@@ -87,16 +92,46 @@ const Quizcard = ({quiz, onDelete, onRename, onRefresh}) => {
                 {quiz.title || `Quiz - ${moment(quiz.createdAt).format('MMM D, YYYY')}`}
             </h3>
             <p className="text-xs text-slate-400 uppercase tracking-wide">
-                Created {moment(quiz.createdAt).format('MMM D, YYYY')}
+                Created {moment(quiz.createdAt).format('MMM D, YYYY • h:mm A')}
             </p>
         </div>
 
+        {/* Quiz Info */}
         <div className="flex items-center gap-2">
             <div className="bg-orange-50 border border-orange-100 rounded-lg px-3 py-1">
                 <span className="text-xs font-medium text-orange-500">
                   {quiz.questions.length}{" "}
                   {quiz.questions.length === 1 ? "Question" : "Questions"}
                 </span>
+            </div>
+            {quiz.isCompleted && (
+                <div className="bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-1">
+                    <span className="text-xs font-medium text-emerald-500">
+                        {quiz.score}% Score
+                    </span>
+                </div>
+            )}
+        </div>
+
+        {/* Progress Bar */}
+        <div className="flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-slate-400">
+                    {quiz.isCompleted ? 'Completed' : 'Progress'}
+                </span>
+                <span className="text-xs font-medium text-slate-500">
+                    {quiz.isCompleted ? `${quiz.score}%` : `${completionPercentage}%`}
+                </span>
+            </div>
+            <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                        quiz.isCompleted
+                            ? 'bg-gradient-to-r from-emerald-400 to-emerald-500'
+                            : 'bg-gradient-to-r from-orange-400 to-orange-500'
+                    }`}
+                    style={{ width: `${quiz.isCompleted ? quiz.score : completionPercentage}%` }}
+                />
             </div>
         </div>
 

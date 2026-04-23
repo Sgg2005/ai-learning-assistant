@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, ArrowUpDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import quizService from '../../services/quizServices';
@@ -20,6 +20,7 @@ const QuizManager = ({ documentId }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [selectedQuiz, setSelectedQuiz] = useState(null);
+    const [sortBy, setSortBy] = useState('date-desc');
 
     const fetchQuizzes = async () => {
         setLoading(true);
@@ -39,6 +40,22 @@ const QuizManager = ({ documentId }) => {
             fetchQuizzes();
         }
     }, [documentId]);
+
+    const getSortedQuizzes = () => {
+        const sorted = [...quizzes];
+        switch (sortBy) {
+            case 'date-desc':
+                return sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            case 'date-asc':
+                return sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            case 'score-desc':
+                return sorted.sort((a, b) => (b.score || 0) - (a.score || 0));
+            case 'score-asc':
+                return sorted.sort((a, b) => (a.score || 0) - (b.score || 0));
+            default:
+                return sorted;
+        }
+    };
 
     const handleGenerateQuiz = async (e) => {
         e.preventDefault();
@@ -96,7 +113,7 @@ const QuizManager = ({ documentId }) => {
 
         return (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {quizzes.map((quiz) => (
+                {getSortedQuizzes().map((quiz) => (
                     <Quizcard key={quiz._id} quiz={quiz} onDelete={() => handleDeleteRequest(quiz)} onRename={fetchQuizzes} />
                 ))}
             </div>
@@ -113,13 +130,30 @@ const QuizManager = ({ documentId }) => {
                         {quizzes.length} {quizzes.length === 1 ? 'quiz' : 'quizzes'} available
                     </p>
                 </div>
-                <button
-                    onClick={() => setIsGenerateModalOpen(true)}
-                    className="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-medium shadow-md shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                >
-                    <Plus className="w-4 h-4" strokeWidth={2.5} />
-                    Generate Quiz
-                </button>
+                <div className="flex items-center gap-3">
+                    {quizzes.length > 1 && (
+                        <div className="flex items-center gap-2 bg-orange-50 border border-orange-100 rounded-xl px-3 py-2">
+                            <ArrowUpDown className="w-4 h-4 text-orange-400" strokeWidth={2} />
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                className="text-sm text-slate-600 bg-transparent outline-none cursor-pointer"
+                            >
+                                <option value="date-desc">Newest First</option>
+                                <option value="date-asc">Oldest First</option>
+                                <option value="score-desc">Highest Score</option>
+                                <option value="score-asc">Lowest Score</option>
+                            </select>
+                        </div>
+                    )}
+                    <button
+                        onClick={() => setIsGenerateModalOpen(true)}
+                        className="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-medium shadow-md shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    >
+                        <Plus className="w-4 h-4" strokeWidth={2.5} />
+                        Generate Quiz
+                    </button>
+                </div>
             </div>
 
             {renderQuizContent()}
@@ -186,7 +220,7 @@ const QuizManager = ({ documentId }) => {
                     <Button
                         type="button"
                         variant="outline"
-                        onClick={() => setIsDeleteModalOpen(false)}  
+                        onClick={() => setIsDeleteModalOpen(false)}
                         disabled={deleting}
                     >
                         Cancel
