@@ -13,7 +13,6 @@ import QuizManager from '../../components/quizzes/QuizManager';
 import NotesTab from '../../components/documents/NotesTab';
 
 const DocumentDetailPage = () => {
-
   const { id } = useParams();
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -37,34 +36,26 @@ const DocumentDetailPage = () => {
 
   const getPdfUrl = () => {
     if (!document) return null;
-
     const apiBase = import.meta.env.VITE_API_URL || "http://localhost:8000";
-
-    if (document.fileName) {
-      return `${apiBase}/uploads/documents/${document.fileName}`;
-    }
-
+    if (document.fileName) return `${apiBase}/uploads/documents/${document.fileName}`;
     if (document.filePath?.startsWith("http")) return document.filePath;
     if (document.filePath) return `${apiBase}${document.filePath.startsWith("/") ? "" : "/"}${document.filePath}`;
-
     return null;
   };
 
   const renderContent = () => {
-    if (loading){
-      return <Spinner />;
-    }
+    if (loading) return <Spinner />;
 
     if (!document?.filePath) {
-      return <div className="text-center p-8">PDF not available</div>;
+      return <div className="text-center p-8 text-slate-600 dark:text-slate-400">PDF not available</div>;
     }
 
     const pdfUrl = getPdfUrl();
 
     return (
-      <div className="bg-white border border-slate-200/60 rounded-2xl overflow-hidden shadow-sm">
-        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100">
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Document Viewer</span>
+      <div className="bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100 dark:border-slate-700">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Document Viewer</span>
           <a
             href={pdfUrl}
             target="_blank"
@@ -88,43 +79,28 @@ const DocumentDetailPage = () => {
     );
   };
 
-  const renderAIActions = () => {
-    return <AIActions />;
-  };
-
-  const renderFlashcards = () => {
-    return <FlashcardManager documentId={id} />;
-  };
-
-  const renderQuizzesTab = () => {
-    return <QuizManager documentId={id} />;
-  };
-
-  const renderNotes = () => {
-    return <NotesTab documentId={id} initialNotes={document?.notes || ''} />;
-  };
-
   const tabs = [
     { name: 'Content', label: 'Content', content: renderContent() },
     { name: 'Chat', label: 'Chat', content: <ChatInterface /> },
-    { name: 'AI Actions', label: 'AI Actions', content: renderAIActions() },
-    { name: 'Flashcards', label: 'Flashcards', content: renderFlashcards() },
-    { name: 'Quizzes', label: 'Quizzes', content: renderQuizzesTab() },
-    { name: 'Notes', label: 'Notes', content: activeTab === 'Notes' ? renderNotes() : null },
+    { name: 'AI Actions', label: 'AI Actions', content: <AIActions /> },
+    { name: 'Flashcards', label: 'Flashcards', content: <FlashcardManager documentId={id} /> },
+    { name: 'Quizzes', label: 'Quizzes', content: <QuizManager documentId={id} /> },
+    { name: 'Notes', label: 'Notes', content: activeTab === 'Notes' ? <NotesTab documentId={id} initialNotes={document?.notes || ''} /> : null },
   ];
 
-  if(loading) {
-    return <Spinner />;
-  }
+  if (loading) return <Spinner />;
 
-  if(!document) {
-    return <div className="text-center p-8">Document not found</div>;
+  if (!document) {
+    return <div className="text-center p-8 text-slate-600 dark:text-slate-400">Document not found</div>;
   }
 
   return (
-    <div>
+    <div className="transition-colors duration-300">
       <div className="mb-4">
-        <Link to="/documents" className="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+        <Link
+          to="/documents"
+          className="inline-flex items-center gap-2 text-sm text-neutral-600 dark:text-slate-400 hover:text-neutral-900 dark:hover:text-slate-100 transition-colors"
+        >
           <ArrowLeft size={20} />
           Back to Documents
         </Link>

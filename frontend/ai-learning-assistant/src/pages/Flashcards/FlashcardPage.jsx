@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import {
-  ArrowLeft,
-  Plus,
-  ChevronLeft,
-  ChevronRight,
-  Trash2,
-} from "lucide-react";
+import { ArrowLeft, Plus, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 import flashcardService from "../../services/flashcardServices";
@@ -19,29 +13,28 @@ import Modal from "../../components/common/Modal";
 import Flashcard from "../../components/flashcards/Flashcard";
 
 const FlashCardPage = () => {
+  const { id: documentId } = useParams();
+  const [flashcardsSets, setFlashcardsSets] = useState([]);
+  const [flashcards, setFlashcards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
- const { id: documentId } = useParams();
- const [flashcardsSets, setFlashcardsSets] = useState([]);
- const [flashcards, setFlashcards] = useState([]);
- const [loading, setLoading] = useState(true);
- const [generating, setGenerating] = useState(false);
- const [currentCardIndex, setCurrentCardIndex] = useState(0);
- const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
- const [deleting, setDeleting] = useState(false);
-
- const fetchFlashcards = async () => {
-  setLoading(true);
-  try {
-    const response = await flashcardService.getFlashcardsForDocument(documentId);
-    setFlashcards(response.data[0]);
-    setFlashcardsSets(response.data[0]?.cards || []);
-  } catch (error) {
-    toast.error("Failed to fetch flashcards");
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
+  const fetchFlashcards = async () => {
+    setLoading(true);
+    try {
+      const response = await flashcardService.getFlashcardsForDocument(documentId);
+      setFlashcards(response.data[0]);
+      setFlashcardsSets(response.data[0]?.cards || []);
+    } catch (error) {
+      toast.error("Failed to fetch flashcards");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchFlashcards();
@@ -75,7 +68,6 @@ const FlashCardPage = () => {
   const handleReview = async (index) => {
     const currentCard = flashcardsSets[currentCardIndex];
     if (!currentCard) return;
-
     try {
       await flashcardService.reviewFlashcard(currentCard._id, index);
     } catch (error) {
@@ -137,21 +129,13 @@ const FlashCardPage = () => {
           <Flashcard flashcard={currentCard} onToggleStar={handleToggleStar} />
         </div>
         <div className="flex items-center gap-6">
-          <Button
-            onClick={handlePrevCard}
-            variant="secondary"
-            disabled={flashcardsSets.length <= 1}
-          >
+          <Button onClick={handlePrevCard} variant="secondary" disabled={flashcardsSets.length <= 1}>
             <ChevronLeft size={16} /> Previous
           </Button>
-          <span className="text-sm font-semibold text-slate-600">
+          <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">
             {currentCardIndex + 1} / {flashcardsSets.length}
           </span>
-          <Button
-            onClick={handleNextCard}
-            variant="secondary"
-            disabled={flashcardsSets.length <= 1}
-          >
+          <Button onClick={handleNextCard} variant="secondary" disabled={flashcardsSets.length <= 1}>
             Next <ChevronRight size={16} />
           </Button>
         </div>
@@ -164,7 +148,7 @@ const FlashCardPage = () => {
       <div className="mb-6">
         <Link
           to={`/documents/${documentId}`}
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors"
+          className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
         >
           <ArrowLeft size={16} />
           Back to Document
@@ -176,11 +160,7 @@ const FlashCardPage = () => {
         <div className="flex items-center gap-3">
           {!loading && (
             flashcardsSets.length > 0 ? (
-              <Button
-                onClick={() => setIsDeleteModalOpen(true)}
-                disabled={deleting}
-                variant="secondary"
-              >
+              <Button onClick={() => setIsDeleteModalOpen(true)} disabled={deleting} variant="secondary">
                 <Trash2 size={16} /> Delete Set
               </Button>
             ) : (
@@ -196,33 +176,24 @@ const FlashCardPage = () => {
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-8">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 transition-colors duration-300">
         {renderFlashcardContent()}
       </div>
 
       <Modal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}  
+        onClose={() => setIsDeleteModalOpen(false)}
         title="Confirm Delete Flashcard Set"
       >
         <div className="flex flex-col gap-5">
-          <p className="text-sm text-slate-600 leading-relaxed">
+          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
             Are you sure you want to delete this flashcard set? This action cannot be undone.
           </p>
           <div className="flex items-center gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsDeleteModalOpen(false)}
-              disabled={deleting}
-            >
+            <Button type="button" variant="outline" onClick={() => setIsDeleteModalOpen(false)} disabled={deleting}>
               Cancel
             </Button>
-            <Button
-              onClick={handleDeleteFlashcard}
-              disabled={deleting}
-              variant="danger"
-            >
+            <Button onClick={handleDeleteFlashcard} disabled={deleting} variant="danger">
               {deleting ? <Spinner /> : "Delete"}
             </Button>
           </div>

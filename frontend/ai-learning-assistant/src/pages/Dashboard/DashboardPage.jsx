@@ -44,12 +44,12 @@ const DashboardPage = () => {
 
   if (!dashboardData || !dashboardData.overview) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-100 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-700 mb-4">
             <TrendingUp className="w-8 h-8 text-slate-400" />
           </div>
-          <p className="text-slate-600 text-sm">No dashboard data available.</p>
+          <p className="text-slate-600 dark:text-slate-400 text-sm">No dashboard data available.</p>
         </div>
       </div>
     );
@@ -64,7 +64,6 @@ const DashboardPage = () => {
   const weeklyProgress = Math.min(totalResources, weeklyGoal);
   const progressPercentage = Math.min((weeklyProgress / weeklyGoal) * 100, 100);
 
-  // Calculate streak from activity timestamps
   const calculateStreak = () => {
     const allTimestamps = [
       ...(dashboardData.recentActivity?.documents || []).map(d => d.uploadDate),
@@ -183,11 +182,12 @@ const DashboardPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 p-6 transition-colors duration-300">
+      
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
-        <p className="text-slate-500 text-sm mt-1">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Dashboard</h1>
+        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
           Track your learning progress, activity, and AI-powered study support
         </p>
       </div>
@@ -229,36 +229,35 @@ const DashboardPage = () => {
       </div>
 
       {/* Streak Tracker */}
-      <div className="bg-white border border-slate-200/70 rounded-3xl p-6 shadow-sm mb-8">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm mb-8 transition-colors duration-300">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-md">
             <Flame className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-base font-semibold text-slate-900">Study Streak</h3>
-            <p className="text-sm text-slate-500">Keep studying every day to maintain your streak</p>
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Study Streak</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Keep studying every day to maintain your streak</p>
           </div>
         </div>
 
         <div className="flex items-center gap-6">
-          <div className="flex flex-col items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100">
+          <div className="flex flex-col items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-500/10 dark:to-red-500/10 border border-orange-100 dark:border-orange-500/20">
             <span className="text-4xl font-bold text-orange-500">{streak}</span>
-            <span className="text-xs font-medium text-slate-500 mt-1">{streak === 1 ? 'day' : 'days'}</span>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">{streak === 1 ? 'day' : 'days'}</span>
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-slate-800 mb-1">
+            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1">
               {streak === 0 && 'No streak yet — start studying today!'}
               {streak === 1 && 'Great start! Come back tomorrow to keep it going.'}
               {streak >= 2 && streak < 7 && `${streak} days in a row! Keep it up!`}
               {streak >= 7 && streak < 30 && `🔥 ${streak} day streak! You're on fire!`}
               {streak >= 30 && `🏆 ${streak} day streak! Incredible dedication!`}
             </p>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-400 dark:text-slate-500">
               {streak === 0
                 ? 'Upload a document, create flashcards, or complete a quiz to start your streak.'
                 : 'Study at least once a day to keep your streak alive.'}
             </p>
-            {/* Last 7 days indicator */}
             <div className="flex items-center gap-1.5 mt-3">
               {Array.from({ length: 7 }).map((_, i) => {
                 const day = new Date();
@@ -276,12 +275,12 @@ const DashboardPage = () => {
                       wasActive
                         ? 'bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-md shadow-orange-200'
                         : isToday
-                        ? 'bg-orange-50 border-2 border-orange-300 text-orange-400'
-                        : 'bg-slate-100 text-slate-400'
+                        ? 'bg-orange-50 dark:bg-orange-500/10 border-2 border-orange-300 dark:border-orange-500/40 text-orange-400'
+                        : 'bg-slate-100 dark:bg-slate-700 text-slate-400'
                     }`}>
                       {wasActive ? '✓' : isToday ? '·' : ''}
                     </div>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-slate-400 dark:text-slate-500">
                       {day.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0)}
                     </span>
                   </div>
@@ -297,18 +296,18 @@ const DashboardPage = () => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="group bg-white border border-slate-200/70 rounded-3xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+            className="group bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
           >
             <div className="flex items-start justify-between mb-5">
               <div>
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{stat.label}</p>
-                <h3 className="text-3xl font-bold text-slate-900 mt-3">{stat.value}</h3>
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{stat.label}</p>
+                <h3 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-3">{stat.value}</h3>
               </div>
               <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-md`}>
                 <stat.icon className="w-5 h-5 text-white" strokeWidth={2.2} />
               </div>
             </div>
-            <p className="text-sm text-slate-500">{stat.subtext}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{stat.subtext}</p>
           </div>
         ))}
       </div>
@@ -316,14 +315,14 @@ const DashboardPage = () => {
       {/* Middle Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
         {/* AI Suggestions */}
-        <div className="xl:col-span-2 bg-white border border-slate-200/70 rounded-3xl p-6 shadow-sm">
+        <div className="xl:col-span-2 bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm transition-colors duration-300">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-md">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-slate-900">AI Suggestions</h3>
-              <p className="text-sm text-slate-500">Smart actions to help you study more effectively</p>
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">AI Suggestions</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Smart actions to help you study more effectively</p>
             </div>
           </div>
 
@@ -332,15 +331,15 @@ const DashboardPage = () => {
               <Link
                 key={index}
                 to={item.link}
-                className="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 hover:bg-slate-50 transition-colors"
+                className="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-700/50 p-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center">
-                    <item.icon className="w-5 h-5 text-slate-700" />
+                  <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-600 border border-slate-200 dark:border-slate-500 flex items-center justify-center">
+                    <item.icon className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{item.title}</p>
-                    <p className="text-xs text-slate-500 mt-1">{item.description}</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{item.title}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{item.description}</p>
                   </div>
                 </div>
                 <span className="shrink-0 inline-flex items-center gap-1 text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors">
@@ -353,14 +352,14 @@ const DashboardPage = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white border border-slate-200/70 rounded-3xl p-6 shadow-sm">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm transition-colors duration-300">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center shadow-md">
               <Zap className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-slate-900">Quick Actions</h3>
-              <p className="text-sm text-slate-500">Jump into your next task</p>
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Quick Actions</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Jump into your next task</p>
             </div>
           </div>
 
@@ -369,15 +368,15 @@ const DashboardPage = () => {
               <Link
                 key={index}
                 to={action.href}
-                className="flex items-center justify-between rounded-2xl border border-slate-200 p-4 hover:bg-slate-50 transition-colors"
+                className="flex items-center justify-between rounded-2xl border border-slate-200 dark:border-slate-700 p-4 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${action.gradient} flex items-center justify-center`}>
                     <action.icon className="w-5 h-5 text-white" />
                   </div>
-                  <span className="text-sm font-medium text-slate-800">{action.label}</span>
+                  <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{action.label}</span>
                 </div>
-                <ArrowRight className="w-4 h-4 text-slate-400" />
+                <ArrowRight className="w-4 h-4 text-slate-400 dark:text-slate-500" />
               </Link>
             ))}
           </div>
@@ -385,14 +384,14 @@ const DashboardPage = () => {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white border border-slate-200/70 rounded-3xl p-6 shadow-sm">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700/60 rounded-3xl p-6 shadow-sm transition-colors duration-300">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-md">
             <Clock className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-base font-semibold text-slate-900">Recent Activity</h3>
-            <p className="text-sm text-slate-500">Your latest learning interactions</p>
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Recent Activity</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Your latest learning interactions</p>
           </div>
         </div>
 
@@ -401,24 +400,26 @@ const DashboardPage = () => {
             {recentActivities.map((activity, index) => (
               <div
                 key={activity.id || index}
-                className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-200/70 hover:border-orange-200 hover:bg-orange-50/50 transition-all duration-200"
+                className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200/70 dark:border-slate-700 hover:border-orange-200 dark:hover:border-orange-500/30 hover:bg-orange-50/50 dark:hover:bg-orange-500/5 transition-all duration-200"
               >
                 <div className="flex items-center gap-4">
                   <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${
-                    activity.type === 'document' ? 'bg-blue-100' : 'bg-orange-100'
+                    activity.type === 'document'
+                      ? 'bg-blue-100 dark:bg-blue-500/10'
+                      : 'bg-orange-100 dark:bg-orange-500/10'
                   }`}>
                     {activity.type === 'document' ? (
-                      <FileText className="w-5 h-5 text-blue-600" />
+                      <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     ) : (
-                      <BrainCircuit className="w-5 h-5 text-orange-600" />
+                      <BrainCircuit className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                     )}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-900">
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
                       {activity.type === 'document' ? 'Accessed Document' : 'Attempted Quiz'}
                     </p>
-                    <p className="text-sm text-slate-600">{activity.description}</p>
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-sm text-slate-600 dark:text-slate-400">{activity.description}</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                       {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : 'Invalid Date'}
                     </p>
                   </div>
@@ -437,11 +438,11 @@ const DashboardPage = () => {
           </div>
         ) : (
           <div className="text-center py-14">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-slate-100 mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-slate-100 dark:bg-slate-700 mb-4">
               <Clock className="w-7 h-7 text-slate-400" />
             </div>
-            <p className="text-slate-700 text-sm font-semibold">No recent activity yet</p>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-slate-700 dark:text-slate-300 text-sm font-semibold">No recent activity yet</p>
+            <p className="text-slate-400 dark:text-slate-500 text-sm mt-1">
               Start uploading documents, creating flashcards, or taking quizzes to see activity here.
             </p>
           </div>

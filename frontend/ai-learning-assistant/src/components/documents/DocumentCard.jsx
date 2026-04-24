@@ -5,16 +5,13 @@ import moment from "moment";
 
 const formatFileSize = (bytes) => {
   if (bytes === undefined || bytes === null) return "N/A";
-
   const units = ["B", "KB", "MB", "GB", "TB"];
   let size = bytes;
   let unitIndex = 0;
-
   while (size >= 1024 && unitIndex < units.length - 1) {
     size /= 1024;
     unitIndex++;
   }
-
   return `${size.toFixed(1)} ${units[unitIndex]}`;
 };
 
@@ -32,7 +29,7 @@ const DocumentCard = ({ document, onDelete }) => {
 
   return (
     <div
-      className="bg-white border border-slate-200/60 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-orange-200 transition-all duration-200 cursor-pointer relative group"
+      className="bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-orange-200 dark:hover:border-orange-500/40 transition-all duration-200 cursor-pointer relative group"
       onClick={handleNavigate}
     >
       {/* Header Section */}
@@ -41,10 +38,9 @@ const DocumentCard = ({ document, onDelete }) => {
           <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/25">
             <FileText className="w-5 h-5 text-white" />
           </div>
-
           <button
             onClick={handleDelete}
-            className="p-1.5 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors duration-200"
+            className="p-1.5 rounded-lg text-slate-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 transition-colors duration-200"
             aria-label="Delete document"
           >
             <Trash2 className="w-4 h-4" strokeWidth={2} />
@@ -52,21 +48,21 @@ const DocumentCard = ({ document, onDelete }) => {
         </div>
 
         {/* Title */}
-        <h3 className="text-sm font-semibold text-slate-900 mb-2 truncate" title={document.title}>
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2 truncate" title={document.title}>
           {document.title}
         </h3>
 
         {/* Document Info */}
         <div className="mb-4">
           {document.fileSize !== undefined && (
-            <span className="text-xs text-slate-400">{formatFileSize(document.fileSize)}</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500">{formatFileSize(document.fileSize)}</span>
           )}
         </div>
 
         {/* Stats Section */}
         <div className="flex items-center gap-3 mb-2">
           <div
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-50 text-purple-600"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400"
             onClick={(e) => e.stopPropagation()}
           >
             <BookOpen className="w-3.5 h-3.5" strokeWidth={2} />
@@ -74,7 +70,7 @@ const DocumentCard = ({ document, onDelete }) => {
           </div>
 
           <div
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-600"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
             onClick={(e) => e.stopPropagation()}
           >
             <BrainCircuit className="w-3.5 h-3.5" strokeWidth={2} />
@@ -84,10 +80,10 @@ const DocumentCard = ({ document, onDelete }) => {
       </div>
 
       {/* Footer Section */}
-      <div className="mt-4 pt-4 border-t border-slate-100">
+      <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
         <div className="flex items-center gap-1.5">
-          <Clock className="w-3.5 h-3.5 text-slate-400" strokeWidth={2} />
-          <span className="text-xs text-slate-400">
+          <Clock className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" strokeWidth={2} />
+          <span className="text-xs text-slate-400 dark:text-slate-500">
             Uploaded {moment(document.createdAt).fromNow()}
           </span>
         </div>

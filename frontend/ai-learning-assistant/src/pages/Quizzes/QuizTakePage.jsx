@@ -8,9 +8,7 @@ import Spinner from '../../components/common/Spinner';
 import toast from 'react-hot-toast';
 import Button from '../../components/common/Button';
 
-
 const QuizTakePage = () => {
-
   const { quizId } = useParams();
   const navigate = useNavigate();
   const [quiz, setQuiz] = useState(null);
@@ -32,19 +30,15 @@ const QuizTakePage = () => {
         setLoading(false);
       }
     };
-
     fetchQuiz();
   }, [quizId]);
 
   const handleOptionChange = (questionId, optionId) => {
-    setSelectedAnswer(prev => ({ 
-      ...prev, 
-      [questionId]: optionId 
-    }));
+    setSelectedAnswer(prev => ({ ...prev, [questionId]: optionId }));
   };
 
   const handleNextQuestion = () => {
-    if(currentQuestionIndex < quiz.questions.length - 1) {
+    if (currentQuestionIndex < quiz.questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     }
   };
@@ -80,38 +74,35 @@ const QuizTakePage = () => {
   const handleRetake = async () => {
     setRetaking(true);
     try {
-        const response = await aiService.generateQuiz(quiz.documentId, {
-            questionCount: quiz.totalQuestions
-        });
-        toast.success('New quiz generated!');
-        navigate(`/quizzes/take/${response.data._id}`);
+      const response = await aiService.generateQuiz(quiz.documentId, {
+        questionCount: quiz.totalQuestions
+      });
+      toast.success('New quiz generated!');
+      navigate(`/quizzes/take/${response.data._id}`);
     } catch (error) {
-        toast.error('Failed to generate new quiz');
+      toast.error('Failed to generate new quiz');
     } finally {
-        setRetaking(false);
+      setRetaking(false);
     }
   };
 
-  if(loading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Spinner />
       </div>
     );
   }
-  
+
   if (!quiz || quiz.questions.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <p className="text-slate-600 text-lg">Quiz not found or it has no questions.</p>
-        </div>
+        <p className="text-slate-600 dark:text-slate-400 text-lg">Quiz not found or it has no questions.</p>
       </div>
     );
   }
 
   const currentQuestion = quiz.questions[currentQuestionIndex];
-  const isAnswered = selectedAnswer.hasOwnProperty(currentQuestion._id);
   const answeredCount = Object.keys(selectedAnswer).length;
 
   return (
@@ -121,14 +112,14 @@ const QuizTakePage = () => {
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold text-slate-700">
+          <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
             Question {currentQuestionIndex + 1} of {quiz.questions.length}
           </span>
-          <span className="text-sm font-medium text-slate-500">
+          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
             {answeredCount} answered
           </span>
         </div>
-        <div className="relative h-3 bg-slate-200 rounded-full overflow-hidden">
+        <div className="relative h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
           <div
             className="absolute inset-y-0 left-0 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${(answeredCount / quiz.questions.length) * 100}%` }}
@@ -137,29 +128,29 @@ const QuizTakePage = () => {
       </div>
 
       {/* Question Card */}
-      <div className="bg-white border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-8">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 transition-colors duration-300">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center" />
+          <div className="w-8 h-8 rounded-xl bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center" />
           <span className="text-sm font-semibold text-orange-500">
             Question {currentQuestionIndex + 1}
           </span>
         </div>
-      
-        <h3 className="text-lg font-semibold text-slate-800 mb-6">
+
+        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-6">
           {currentQuestion.question}
         </h3>
 
         {/* Options */}
         <div className="flex flex-col gap-3">
           {currentQuestion.options.map((option, index) => {
-            const isSelected = selectedAnswer[currentQuestion._id] === index; 
+            const isSelected = selectedAnswer[currentQuestion._id] === index;
             return (
               <label
                 key={index}
                 className={`group relative flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
                   isSelected
-                    ? 'border-orange-500 bg-orange-50 shadow-lg shadow-orange-500/10'
-                    : 'border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-md'
+                    ? 'border-orange-500 bg-orange-50 dark:bg-orange-500/10 shadow-lg shadow-orange-500/10'
+                    : 'border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-700/50 hover:bg-white dark:hover:bg-slate-700 hover:shadow-md'
                 }`}
               >
                 <input
@@ -170,31 +161,29 @@ const QuizTakePage = () => {
                   onChange={() => handleOptionChange(currentQuestion._id, index)}
                   className="sr-only"
                 />
-                
+
                 <div className={`shrink-0 w-5 h-5 rounded-full border-2 transition-all duration-200 ${
-                  isSelected 
+                  isSelected
                     ? 'border-orange-500 bg-orange-500'
-                    : 'border-slate-300 bg-white group-hover:border-orange-300'
+                    : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 group-hover:border-orange-300'
                 }`}>
                   {isSelected && (
                     <div className="flex items-center justify-center w-full h-full">
-                      <div className="w-2 h-2 rounded-full bg-white" /> 
+                      <div className="w-2 h-2 rounded-full bg-white" />
                     </div>
                   )}
                 </div>
 
                 <span className={`ml-4 text-sm font-medium transition-colors duration-200 ${
-                  isSelected 
-                    ? 'text-slate-900' : 'text-slate-700 group-hover:text-slate-900'
+                  isSelected
+                    ? 'text-slate-900 dark:text-slate-100'
+                    : 'text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100'
                 }`}>
                   {option}
                 </span>
-                
+
                 {isSelected && (
-                  <CheckCircle2
-                     className="ml-auto w-5 h-5 text-orange-500"
-                     strokeWidth={2.5}
-                  />
+                  <CheckCircle2 className="ml-auto w-5 h-5 text-orange-500" strokeWidth={2.5} />
                 )}
               </label>
             );
@@ -205,9 +194,9 @@ const QuizTakePage = () => {
       {/* Navigation Buttons */}
       <div className="flex items-center justify-between mt-8">
         <Button
-           onClick={handlePreviousQuestion}
-           disabled={currentQuestionIndex === 0 || submitting}
-           variant='secondary'
+          onClick={handlePreviousQuestion}
+          disabled={currentQuestionIndex === 0 || submitting}
+          variant="secondary"
         >
           <ChevronLeft className="w-4 h-4" strokeWidth={2.5} />
           Previous
@@ -218,7 +207,7 @@ const QuizTakePage = () => {
             <button
               onClick={handleRetake}
               disabled={retaking || submitting}
-              className="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-orange-50 border border-orange-100 text-orange-500 text-sm font-medium hover:bg-orange-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-orange-50 dark:bg-orange-500/10 border border-orange-100 dark:border-orange-500/20 text-orange-500 text-sm font-medium hover:bg-orange-100 dark:hover:bg-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {retaking ? (
                 <>
@@ -236,9 +225,9 @@ const QuizTakePage = () => {
 
           {currentQuestionIndex === quiz.questions.length - 1 ? (
             <button
-               onClick={handleSubmitQuiz}
-               disabled={submitting || retaking}
-               className="flex items-center gap-2 py-2.5 px-6 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-semibold shadow-lg shadow-orange-500/25 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              onClick={handleSubmitQuiz}
+              disabled={submitting || retaking}
+              className="flex items-center gap-2 py-2.5 px-6 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-semibold shadow-lg shadow-orange-500/25 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {submitting ? (
                 <>
@@ -253,10 +242,7 @@ const QuizTakePage = () => {
               )}
             </button>
           ) : (
-            <Button
-                onClick={handleNextQuestion}
-                disabled={submitting}
-            >
+            <Button onClick={handleNextQuestion} disabled={submitting}>
               Next
               <ChevronRight className="w-4 h-4" strokeWidth={2.5} />
             </Button>
@@ -269,7 +255,6 @@ const QuizTakePage = () => {
         {quiz.questions.length >= 5 && quiz.questions.map((question, index) => {
           const isAnsweredQuestion = selectedAnswer.hasOwnProperty(question._id);
           const isCurrent = currentQuestionIndex === index;
-
           return (
             <button
               key={index}
@@ -279,8 +264,8 @@ const QuizTakePage = () => {
                 isCurrent
                   ? 'bg-gradient-to-r from-orange-400 to-orange-500 text-white shadow-lg shadow-orange-500/25 scale-110'
                   : isAnsweredQuestion
-                  ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-                  : 'bg-slate-200 text-slate-500 hover:bg-slate-300'
+                  ? 'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 hover:bg-orange-200 dark:hover:bg-orange-500/30'
+                  : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600'
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {index + 1}

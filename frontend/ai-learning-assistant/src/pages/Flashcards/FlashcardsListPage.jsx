@@ -83,7 +83,7 @@ const FlashcardsListPage = () => {
           className={`flex items-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium border transition-all ${
             showStarredOnly
               ? 'bg-orange-500 text-white border-orange-500 shadow-md shadow-orange-200'
-              : 'bg-white text-slate-600 border-slate-200 hover:border-orange-300 hover:text-orange-500'
+              : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-orange-300 hover:text-orange-500'
           }`}
         >
           <Star className="w-4 h-4" strokeWidth={2.5} fill={showStarredOnly ? 'white' : 'none'} />
@@ -100,12 +100,12 @@ const FlashcardsListPage = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search flashcard sets..."
-            className="w-full h-11 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 placeholder:text-slate-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all"
+            className="w-full h-11 pl-11 pr-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 dark:focus:ring-orange-500/20 transition-all"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
             >
               <X className="w-4 h-4" strokeWidth={2} />
             </button>

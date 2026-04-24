@@ -81,32 +81,32 @@ const ProfilePage = () => {
       <PageHeader title="Profile Settings" />
 
       {/* User Information */}
-      <div className="bg-white border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-8 mb-6">
-        <h3 className="text-lg font-semibold text-slate-800 mb-6">User Information</h3>
+      <div className="bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 mb-6 transition-colors duration-300">
+        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-6">User Information</h3>
         <form onSubmit={handleUpdateProfile} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700">Username</label>
-            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Username</label>
+            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
               <User className="w-4 h-4 text-slate-400" strokeWidth={2} />
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="flex-1 bg-transparent text-sm text-slate-700 outline-none"
+                className="flex-1 bg-transparent text-sm text-slate-700 dark:text-slate-200 outline-none"
                 placeholder="Username"
               />
             </div>
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700">Email Address</label>
-            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email Address</label>
+            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
               <Mail className="w-4 h-4 text-slate-400" strokeWidth={2} />
               <input
                 type="email"
                 value={email}
                 disabled
-                className="flex-1 bg-transparent text-sm text-slate-400 outline-none cursor-not-allowed"
+                className="flex-1 bg-transparent text-sm text-slate-400 dark:text-slate-500 outline-none cursor-not-allowed"
                 placeholder="Email"
               />
             </div>
@@ -121,18 +121,18 @@ const ProfilePage = () => {
       </div>
 
       {/* Change Password */}
-      <div className="bg-white border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-8">
-        <h3 className="text-lg font-semibold text-slate-800 mb-6">Change Password</h3>
+      <div className="bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 transition-colors duration-300">
+        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-6">Change Password</h3>
         <form onSubmit={handleChangePassword} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700">Current Password</label>
-            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Current Password</label>
+            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
               <Lock className="w-4 h-4 text-slate-400" strokeWidth={2} />
               <input
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="flex-1 bg-transparent text-sm text-slate-700 outline-none"
+                className="flex-1 bg-transparent text-sm text-slate-700 dark:text-slate-200 outline-none"
                 placeholder="••••••••"
                 required
               />
@@ -140,14 +140,14 @@ const ProfilePage = () => {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700">New Password</label>
-            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">New Password</label>
+            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
               <Lock className="w-4 h-4 text-slate-400" strokeWidth={2} />
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="flex-1 bg-transparent text-sm text-slate-700 outline-none"
+                className="flex-1 bg-transparent text-sm text-slate-700 dark:text-slate-200 outline-none"
                 placeholder="••••••••••••••••"
                 required
               />
@@ -155,14 +155,14 @@ const ProfilePage = () => {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700">Confirm New Password</label>
-            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus-within:ring-2 focus-within:ring-orange-300 transition-all">
+            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Confirm New Password</label>
+            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 focus-within:ring-2 focus-within:ring-orange-300 dark:focus-within:ring-orange-500/40 transition-all">
               <Lock className="w-4 h-4 text-slate-400" strokeWidth={2} />
               <input
                 type="password"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
-                className="flex-1 bg-transparent text-sm text-slate-700 outline-none"
+                className="flex-1 bg-transparent text-sm text-slate-700 dark:text-slate-200 outline-none"
                 placeholder="••••••••"
                 required
               />
