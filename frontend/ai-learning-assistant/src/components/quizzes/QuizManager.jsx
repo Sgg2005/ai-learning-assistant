@@ -11,7 +11,6 @@ import EmptyState from '../common/EmptyState';
 import Button from '../common/Button';
 
 const QuizManager = ({ documentId }) => {
-
     const [quizzes, setQuizzes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
@@ -29,31 +28,23 @@ const QuizManager = ({ documentId }) => {
             setQuizzes(data.data || data || []);
         } catch (error) {
             toast.error('Failed to load quizzes');
-            console.error(error);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        if (documentId) {
-            fetchQuizzes();
-        }
+        if (documentId) fetchQuizzes();
     }, [documentId]);
 
     const getSortedQuizzes = () => {
         const sorted = [...quizzes];
         switch (sortBy) {
-            case 'date-desc':
-                return sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            case 'date-asc':
-                return sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-            case 'score-desc':
-                return sorted.sort((a, b) => (b.score || 0) - (a.score || 0));
-            case 'score-asc':
-                return sorted.sort((a, b) => (a.score || 0) - (b.score || 0));
-            default:
-                return sorted;
+            case 'date-desc': return sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            case 'date-asc': return sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            case 'score-desc': return sorted.sort((a, b) => (b.score || 0) - (a.score || 0));
+            case 'score-asc': return sorted.sort((a, b) => (a.score || 0) - (b.score || 0));
+            default: return sorted;
         }
     };
 
@@ -122,119 +113,100 @@ const QuizManager = ({ documentId }) => {
 
     return (
         <>
-        <div className="bg-white border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-8 space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h3 className="text-lg font-semibold text-slate-800">Your Quizzes</h3>
-                    <p className="text-sm text-slate-500">
-                        {quizzes.length} {quizzes.length === 1 ? 'quiz' : 'quizzes'} available
-                    </p>
-                </div>
-                <div className="flex items-center gap-3">
-                    {quizzes.length > 1 && (
-                        <div className="flex items-center gap-2 bg-orange-50 border border-orange-100 rounded-xl px-3 py-2">
-                            <ArrowUpDown className="w-4 h-4 text-orange-400" strokeWidth={2} />
-                            <select
-                                value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value)}
-                                className="text-sm text-slate-600 bg-transparent outline-none cursor-pointer"
-                            >
-                                <option value="date-desc">Newest First</option>
-                                <option value="date-asc">Oldest First</option>
-                                <option value="score-desc">Highest Score</option>
-                                <option value="score-asc">Lowest Score</option>
-                            </select>
-                        </div>
-                    )}
-                    <button
-                        onClick={() => setIsGenerateModalOpen(true)}
-                        className="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-medium shadow-md shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                    >
-                        <Plus className="w-4 h-4" strokeWidth={2.5} />
-                        Generate Quiz
-                    </button>
-                </div>
-            </div>
-
-            {renderQuizContent()}
-        </div>
-
-        {/* Generate Quiz Modal */}
-        <Modal
-            isOpen={isGenerateModalOpen}
-            onClose={() => setIsGenerateModalOpen(false)}
-            title="Generate New Quiz"
-        >
-            <form onSubmit={handleGenerateQuiz} className="flex flex-col gap-5">
-                <div>
-                    <label className="text-sm font-medium text-slate-700 mb-2 block">
-                        Number of Questions
-                    </label>
-                    <input
-                        type="number"
-                        value={numQuestions}
-                        onChange={(e) => setNumQuestions(Math.max(1, parseInt(e.target.value) || 1))}
-                        min="1"
-                        required
-                        className="w-full px-4 py-2.5 rounded-xl bg-orange-50 border border-orange-100 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-orange-300 transition-all"
-                    />
-                </div>
-                <div className="flex items-center gap-3">
-                    <button
-                        type="button"
-                        onClick={() => setIsGenerateModalOpen(false)}
-                        disabled={generating}
-                        className="flex-1 py-2.5 px-4 rounded-xl bg-orange-50 border border-orange-100 text-slate-600 text-sm font-medium hover:bg-orange-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        disabled={generating}
-                        className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-medium shadow-md shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                    >
-                        {generating ? (
-                            <span className="flex items-center justify-center gap-2">
-                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                Generating...
-                            </span>
-                        ) : (
-                            'Generate'
+            <div className="bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 space-y-6 transition-colors duration-300">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Your Quizzes</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                            {quizzes.length} {quizzes.length === 1 ? 'quiz' : 'quizzes'} available
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        {quizzes.length > 1 && (
+                            <div className="flex items-center gap-2 bg-orange-50 dark:bg-slate-700 border border-orange-100 dark:border-slate-600 rounded-xl px-3 py-2">
+                                <ArrowUpDown className="w-4 h-4 text-orange-400" strokeWidth={2} />
+                                <select
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value)}
+                                    className="text-sm text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer"
+                                >
+                                    <option value="date-desc">Newest First</option>
+                                    <option value="date-asc">Oldest First</option>
+                                    <option value="score-desc">Highest Score</option>
+                                    <option value="score-asc">Lowest Score</option>
+                                </select>
+                            </div>
                         )}
-                    </button>
+                        <button
+                            onClick={() => setIsGenerateModalOpen(true)}
+                            className="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-medium shadow-md shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        >
+                            <Plus className="w-4 h-4" strokeWidth={2.5} />
+                            Generate Quiz
+                        </button>
+                    </div>
                 </div>
-            </form>
-        </Modal>
 
-        {/* Delete Confirmation Modal */}
-        <Modal
-            isOpen={isDeleteModalOpen}
-            onClose={() => setIsDeleteModalOpen(false)}
-            title="Confirm Delete Quiz"
-        >
-            <div className="flex flex-col gap-5">
-                <p className="text-sm text-slate-600 leading-relaxed">
-                    Are you sure you want to delete the quiz: <span className="font-semibold text-slate-800">{selectedQuiz?.title || 'this quiz'}</span>
-                </p>
-                <div className="flex items-center gap-3">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setIsDeleteModalOpen(false)}
-                        disabled={deleting}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={handleConfirmDelete}
-                        disabled={deleting}
-                        variant="danger"
-                    >
-                        {deleting ? 'Deleting...' : 'Delete'}
-                    </Button>
-                </div>
+                {renderQuizContent()}
             </div>
-        </Modal>
+
+            {/* Generate Quiz Modal */}
+            <Modal isOpen={isGenerateModalOpen} onClose={() => setIsGenerateModalOpen(false)} title="Generate New Quiz">
+                <form onSubmit={handleGenerateQuiz} className="flex flex-col gap-5">
+                    <div>
+                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
+                            Number of Questions
+                        </label>
+                        <input
+                            type="number"
+                            value={numQuestions}
+                            onChange={(e) => setNumQuestions(Math.max(1, parseInt(e.target.value) || 1))}
+                            min="1"
+                            required
+                            className="w-full px-4 py-2.5 rounded-xl bg-orange-50 dark:bg-slate-700 border border-orange-100 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500/40 transition-all"
+                        />
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setIsGenerateModalOpen(false)}
+                            disabled={generating}
+                            className="flex-1 py-2.5 px-4 rounded-xl bg-orange-50 dark:bg-slate-700 border border-orange-100 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-orange-100 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={generating}
+                            className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-medium shadow-md shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        >
+                            {generating ? (
+                                <span className="flex items-center justify-center gap-2">
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    Generating...
+                                </span>
+                            ) : 'Generate'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
+
+            {/* Delete Modal */}
+            <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} title="Confirm Delete Quiz">
+                <div className="flex flex-col gap-5">
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                        Are you sure you want to delete the quiz: <span className="font-semibold text-slate-800 dark:text-slate-100">{selectedQuiz?.title || 'this quiz'}</span>
+                    </p>
+                    <div className="flex items-center gap-3">
+                        <Button type="button" variant="outline" onClick={() => setIsDeleteModalOpen(false)} disabled={deleting}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleConfirmDelete} disabled={deleting} variant="danger">
+                            {deleting ? 'Deleting...' : 'Delete'}
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
         </>
     );
 };

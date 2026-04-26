@@ -63,7 +63,7 @@ const DocumentListPage = () => {
     formData.append("title", uploadTitle.trim());
 
     try {
-      const res = await documentService.uploadDocument(formData);
+      await documentService.uploadDocument(formData);
       toast.success("Document uploaded successfully.");
       setIsUploadModalOpen(false);
       setUploadFile(null);
@@ -96,8 +96,7 @@ const DocumentListPage = () => {
       await documentService.deleteDocument(selectedDoc._id);
       toast.success(`'${selectedDoc.title}' deleted.`);
       setDocuments((prev) => prev.filter((d) => d._id !== selectedDoc._id));
-      setIsDeleteModalOpen(false);
-      setSelectedDoc(null);
+      closeDeleteModal();
     } catch (error) {
       toast.error(error?.error || error?.message || "Failed to delete document.");
     } finally {
@@ -156,22 +155,17 @@ const DocumentListPage = () => {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredDocuments.map((doc) => (
-          <DocumentCard
-            key={doc._id}
-            document={doc}
-            onDelete={openDeleteModal}
-          />
+          <DocumentCard key={doc._id} document={doc} onDelete={openDeleteModal} />
         ))}
       </div>
     );
   };
 
   return (
-    <div className="p-6 bg-slate-50 dark:bg-slate-900 min-h-screen transition-colors duration-300">
-      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-30" />
+    <div className="relative min-h-screen p-6 bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+      <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:16px_16px] opacity-30" />
 
-      <div className="relative">
-        {/* Header */}
+      <div className="relative z-10">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 tracking-tight">My Documents</h1>
@@ -191,7 +185,6 @@ const DocumentListPage = () => {
           )}
         </div>
 
-        {/* Search Bar */}
         {documents.length > 0 && (
           <div className="relative mb-6">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" strokeWidth={2} />
@@ -216,7 +209,6 @@ const DocumentListPage = () => {
         {renderContent()}
       </div>
 
-      {/* Upload Modal */}
       {isUploadModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl w-full max-w-md p-8 relative">
@@ -307,12 +299,11 @@ const DocumentListPage = () => {
         </div>
       )}
 
-      {/* Delete Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl w-full max-w-md p-8 relative">
             <button
-              onClick={() => !deleting && setIsDeleteModalOpen(false)}
+              onClick={closeDeleteModal}
               disabled={deleting}
               className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-200 disabled:opacity-60"
             >
@@ -335,7 +326,7 @@ const DocumentListPage = () => {
             <div className="flex gap-3">
               <button
                 type="button"
-                onClick={() => setIsDeleteModalOpen(false)}
+                onClick={closeDeleteModal}
                 disabled={deleting}
                 className="flex-1 h-12 border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors duration-200 disabled:opacity-60"
               >

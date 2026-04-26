@@ -23,11 +23,11 @@ const NotesTab = ({ documentId, initialNotes }) => {
     };
 
     return (
-        <div className="bg-white border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-8">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 transition-colors duration-300">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     <StickyNote className="w-5 h-5 text-orange-500" strokeWidth={2} />
-                    <h3 className="text-lg font-semibold text-slate-800">My Notes</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">My Notes</h3>
                 </div>
                 <button
                     onClick={handleSave}
@@ -42,9 +42,9 @@ const NotesTab = ({ documentId, initialNotes }) => {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Write your notes here... Jot down key points, summaries, or anything you want to remember about this document."
-                className="w-full h-[60vh] px-4 py-3 rounded-2xl bg-orange-50 border border-orange-100 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-orange-300 resize-none transition-all leading-relaxed"
+                className="w-full h-[60vh] px-4 py-3 rounded-2xl bg-orange-50 dark:bg-slate-700/50 border border-orange-100 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500/40 resize-none transition-all leading-relaxed"
             />
-            <p className="text-xs text-slate-400 mt-2 text-right">{notes.length} characters</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 text-right">{notes.length} characters</p>
         </div>
     );
 };
