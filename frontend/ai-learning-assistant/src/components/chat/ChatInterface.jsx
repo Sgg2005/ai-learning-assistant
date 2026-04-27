@@ -175,8 +175,8 @@ const ChatInterface = () => {
   }
 
   return (
-    <div className="flex gap-4 h-[75vh]">
-      <div className="w-60 shrink-0 bg-white dark:bg-slate-800 border border-orange-100 dark:border-slate-700 rounded-2xl shadow-sm flex flex-col overflow-hidden transition-colors duration-300">
+    <div className="flex flex-col md:flex-row gap-4 h-auto md:h-[75vh]">
+      <div className="w-full md:w-60 max-h-48 md:max-h-none shrink-0 bg-white dark:bg-slate-800 border border-orange-100 dark:border-slate-700 rounded-2xl shadow-sm flex flex-col overflow-hidden transition-colors duration-300">
         <div className="p-3 border-b border-orange-100 dark:border-slate-700">
           <button
             onClick={handleNewChat}
@@ -224,7 +224,7 @@ const ChatInterface = () => {
                   <>
                     <MessageSquare className="w-3.5 h-3.5 text-orange-400 shrink-0" strokeWidth={2} />
                     <span className="flex-1 text-xs text-slate-600 dark:text-slate-300 truncate">{session.sessionName}</span>
-                    <div className="hidden group-hover:flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
                       <button
                         onClick={() => {
                           setRenamingId(session._id);

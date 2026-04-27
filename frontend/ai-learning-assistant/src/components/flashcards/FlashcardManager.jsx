@@ -158,11 +158,11 @@ const FlashcardManager = ({ documentId }) => {
                 </button>
 
                 <div className="flex flex-col items-center justify-center space-y-8">
-                    <div className="w-full max-w-2xl">
+                    <div className="w-full max-w-2xl mb-4">
                         <Flashcard flashcard={currentCard} onToggleStar={handleToggleStar} />
                     </div>
 
-                    <div className="flex items-center justify-between gap-4 mt-6">
+                    <div className="flex items-center justify-between gap-2 mt-6 w-full">
                         <button
                             onClick={handlePrevCard}
                             disabled={selectedSet.cards.length <= 1}

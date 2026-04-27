@@ -114,22 +114,22 @@ const QuizManager = ({ documentId }) => {
     return (
         <>
             <div className="bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8 space-y-6 transition-colors duration-300">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-0 justify-between">
                     <div>
                         <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Your Quizzes</h3>
                         <p className="text-sm text-slate-500 dark:text-slate-400">
                             {quizzes.length} {quizzes.length === 1 ? 'quiz' : 'quizzes'} available
                         </p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 flex-wrap">
                         {quizzes.length > 1 && (
-                            <div className="flex items-center gap-2 bg-orange-50 dark:bg-slate-700 border border-orange-100 dark:border-slate-600 rounded-xl px-3 py-2">
-                                <ArrowUpDown className="w-4 h-4 text-orange-400" strokeWidth={2} />
-                                <select
-                                    value={sortBy}
-                                    onChange={(e) => setSortBy(e.target.value)}
-                                    className="text-sm text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer"
-                                >
+                            <div className="flex items-center gap-2 bg-orange-50 dark:bg-slate-700 border border-orange-100 dark:border-slate-600 rounded-xl px-2 py-2">
+                                <ArrowUpDown className="w-4 h-4 text-orange-400 shrink-0" strokeWidth={2} />
+                                    <select
+                                        value={sortBy}
+                                        onChange={(e) => setSortBy(e.target.value)}
+                                        className="text-xs text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer max-w-[90px]"
+                                    >
                                     <option value="date-desc">Newest First</option>
                                     <option value="date-asc">Oldest First</option>
                                     <option value="score-desc">Highest Score</option>
@@ -139,7 +139,7 @@ const QuizManager = ({ documentId }) => {
                         )}
                         <button
                             onClick={() => setIsGenerateModalOpen(true)}
-                            className="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-medium shadow-md shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                            className="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-medium shadow-md shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] transition-all whitespace-nowrap"
                         >
                             <Plus className="w-4 h-4" strokeWidth={2.5} />
                             Generate Quiz

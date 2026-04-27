@@ -31,7 +31,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
     />
 
     <aside
-      className={`fixed top-0 left-0 h-full w-64 bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg border-r border-slate-200/60 dark:border-slate-700/60 z-50 md:relative md:w-64 md:shrink-0 md:flex md:flex-col md:translate-x-0 transition-transform duration-300 ease-in-out ${
+      className={`fixed top-0 left-0 h-full w-64 bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg border-r border-slate-200/60 dark:border-slate-700/60 z-50 transition-transform duration-300 ease-in-out ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
     >

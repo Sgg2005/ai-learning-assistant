@@ -240,8 +240,8 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className="flex flex-col items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-500/10 dark:to-red-500/10 border border-orange-100 dark:border-orange-500/20">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+          <div className="flex flex-col items-center justify-center w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-2xl bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-500/10 dark:to-red-500/10 border border-orange-100 dark:border-orange-500/20">
             <span className="text-4xl font-bold text-orange-500">{streak}</span>
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">{streak === 1 ? 'day' : 'days'}</span>
           </div>
@@ -258,7 +258,7 @@ const DashboardPage = () => {
                 ? 'Upload a document, create flashcards, or complete a quiz to start your streak.'
                 : 'Study at least once a day to keep your streak alive.'}
             </p>
-            <div className="flex items-center gap-1.5 mt-3">
+            <div className="flex items-center gap-1 sm:gap-1.5 mt-3 flex-wrap">
               {Array.from({ length: 7 }).map((_, i) => {
                 const day = new Date();
                 day.setDate(day.getDate() - (6 - i));

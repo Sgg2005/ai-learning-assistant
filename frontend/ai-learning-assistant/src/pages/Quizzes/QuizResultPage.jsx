@@ -153,7 +153,7 @@ const QuizResultPage = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 mt-6">
+          <div className="flex flex-wrap items-center gap-3 mt-6">
             <div className="flex items-center gap-2 bg-orange-50 dark:bg-orange-500/10 border border-orange-100 dark:border-orange-500/20 rounded-xl px-4 py-3">
               <Target className="w-5 h-5 text-orange-500" strokeWidth={2} />
               <span className="text-sm font-semibold text-orange-500">{totalQuestions} Total</span>
@@ -318,7 +318,7 @@ const QuizResultPage = () => {
       </div>
 
       {/* Action Buttons */}
-      <div className="mt-8 flex items-center gap-3">
+      <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <Link to={`/documents/${quiz.document._id}`}>
           <button className="flex items-center gap-2 py-2.5 px-6 rounded-xl bg-orange-50 dark:bg-orange-500/10 border border-orange-100 dark:border-orange-500/20 text-orange-500 text-sm font-semibold hover:bg-orange-100 dark:hover:bg-orange-500/20 transition-all">
             <ArrowLeft className="w-4 h-4" strokeWidth={2.5} />

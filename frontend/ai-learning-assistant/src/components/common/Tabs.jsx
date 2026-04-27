@@ -4,12 +4,12 @@ const Tabs = ({ tabs, activeTab, setActiveTab }) => {
     return (
         <div className="w-full">
             <div className="border-b border-slate-200 dark:border-slate-700">
-                <nav className="flex gap-1">
+                <nav className="flex gap-1 overflow-x-auto scrollbar-hide">
                     {tabs.map((tab) => (
                         <button
                             key={tab.name}
                             onClick={() => setActiveTab(tab.name)}
-                            className={`relative pb-4 px-6 text-sm font-semibold transition-all duration-200 ${
+                            className={`relative pb-4 px-3 text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
                                 activeTab === tab.name
                                     ? 'text-orange-500'
                                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
