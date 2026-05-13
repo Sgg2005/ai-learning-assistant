@@ -5,13 +5,15 @@ import NotFoundPage from './pages/NotFoundPage';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
 import VerifyEmailPage from './pages/Auth/VerifyEmailPage';
+import ForgotPasswordPage from './pages/Auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/Auth/ResetPasswordPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import DocumentListPage from './pages/Documents/DocumentListPage';
 import DocumentDetailPage from './pages/Documents/DocumentDetailPage';
 import FlashcardsListPage from './pages/Flashcards/FlashcardsListPage';
-import FlashCardPage from './pages/Flashcards/FlashCardPage';
+import FlashCardPage from './pages/Flashcards/FlashcardPage';
 import QuizTakePage from './pages/Quizzes/QuizTakePage';
 import QuizResultPage from './pages/Quizzes/QuizResultPage';
 import AppLayout from './components/layout/AppLayout';
@@ -45,6 +47,8 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
         {/* Protected + Layout routes */}
         <Route element={<ProtectedLayout />}>

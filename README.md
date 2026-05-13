@@ -67,7 +67,21 @@ PORT=8000
 NODE_ENV=development
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+CLIENT_URL=http://localhost:5173
+SMTP_HOST=your_smtp_host
+SMTP_PORT=587
+SMTP_USER=your_smtp_username
+SMTP_PASS=your_smtp_password
+FROM_EMAIL=no-reply@example.com
 ```
+
+### Password Reset (Forgot Password) local testing
+1. Go to `/forgot-password` and submit your account email.
+2. In development mode, the backend logs the reset link to the console.
+3. Open the logged URL (`/reset-password/:token`), set a new password, then log in with it.
+4. If SMTP env variables are configured, a reset email is also sent.
 
 ## Author
 Built by Simon Girma.
