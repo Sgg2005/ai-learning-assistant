@@ -8,9 +8,6 @@ import { sendPasswordResetEmail } from "../utils/emailService.js";
 // key: normalizedEmail -> { username, password, createdAt }
 const pendingRegistrations = new Map();
 const PENDING_TTL_MS = 15 * 60 * 1000; // 15 minutes
-const FORGOT_PASSWORD_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-const FORGOT_PASSWORD_MAX_REQUESTS = 5;
-const forgotPasswordAttempts = new Map();
 
 const isStrongPassword = (password = "") => {
   return (
@@ -19,6 +16,18 @@ const isStrongPassword = (password = "") => {
     /[a-z]/.test(password) &&
     /\d/.test(password) &&
     /[^A-Za-z0-9]/.test(password)
+  );
+};
+
+const isValidEmailFormat = (email = "") => {
+  const atIndex = email.indexOf("@");
+  const lastAtIndex = email.lastIndexOf("@");
+  const lastDotIndex = email.lastIndexOf(".");
+  return (
+    atIndex > 0 &&
+    atIndex === lastAtIndex &&
+    lastDotIndex > atIndex + 1 &&
+    lastDotIndex < email.length - 1
   );
 };
 
@@ -49,27 +58,6 @@ const getPendingRegistration = (email) => {
     return null;
   }
   return pending;
-};
-
-const checkForgotPasswordRateLimit = (ip, email) => {
-  const now = Date.now();
-  const key = `${ip || "unknown"}:${email}`;
-  const current = forgotPasswordAttempts.get(key);
-
-  if (!current || now > current.resetAt) {
-    forgotPasswordAttempts.set(key, {
-      count: 1,
-      resetAt: now + FORGOT_PASSWORD_WINDOW_MS,
-    });
-    return false;
-  }
-
-  if (current.count >= FORGOT_PASSWORD_MAX_REQUESTS) {
-    return true;
-  }
-
-  current.count += 1;
-  return false;
 };
 
 // @desc    Register user (PENDING only) + send OTP
@@ -395,20 +383,11 @@ export const forgotPassword = async (req, res) => {
         "If an account exists for that email, you will receive password reset instructions shortly.",
     };
 
-    if (!normalizedEmail || !/^\S+@\S+\.\S+$/.test(normalizedEmail)) {
+    if (!normalizedEmail || !isValidEmailFormat(normalizedEmail)) {
       return res.status(400).json({
         success: false,
         error: "Please provide a valid email address",
         statusCode: 400,
-      });
-    }
-
-    const isRateLimited = checkForgotPasswordRateLimit(req.ip, normalizedEmail);
-    if (isRateLimited) {
-      return res.status(429).json({
-        success: false,
-        error: "Too many password reset requests. Please try again shortly.",
-        statusCode: 429,
       });
     }
 

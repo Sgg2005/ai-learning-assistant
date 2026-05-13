@@ -1,5 +1,6 @@
 import express from 'express';
 import { body } from 'express-validator';
+import rateLimit from 'express-rate-limit';
 import {
   register,
   verifyEmail,
@@ -13,6 +14,32 @@ import {
 import protect from '../middleware/auth.js';
 
 const router = express.Router();
+
+const forgotPasswordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => `${req.ip || 'unknown'}:${req.body?.email?.toLowerCase?.().trim?.() || ''}`,
+  message: {
+    success: false,
+    error: 'Too many password reset requests. Please try again shortly.',
+    statusCode: 429,
+  },
+});
+
+const resetPasswordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => `${req.ip || 'unknown'}:${req.params?.token || ''}`,
+  message: {
+    success: false,
+    error: 'Too many reset attempts. Please try again shortly.',
+    statusCode: 429,
+  },
+});
 
 // validation middleware
 const registerValidation = [
@@ -57,8 +84,8 @@ const verifyEmailValidation = [
 router.post('/register', registerValidation, register);
 router.post('/verify-email', verifyEmailValidation, verifyEmail);
 router.post('/login', loginValidation, login);
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password/:token', resetPassword);
+router.post('/forgot-password', forgotPasswordLimiter, forgotPassword);
+router.post('/reset-password/:token', resetPasswordLimiter, resetPassword);
 
 // protected routes
 router.get('/profile', protect, getProfile);
