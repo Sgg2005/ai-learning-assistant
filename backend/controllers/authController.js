@@ -1,11 +1,35 @@
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import { createClient } from "@supabase/supabase-js";
 import User from "../models/User.js";
+import { sendPasswordResetEmail } from "../utils/emailService.js";
 
 // Temporary in-memory pending registrations
 // key: normalizedEmail -> { username, password, createdAt }
 const pendingRegistrations = new Map();
 const PENDING_TTL_MS = 15 * 60 * 1000; // 15 minutes
+
+const isStrongPassword = (password = "") => {
+  return (
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /\d/.test(password) &&
+    /[^A-Za-z0-9]/.test(password)
+  );
+};
+
+const isValidEmailFormat = (email = "") => {
+  const atIndex = email.indexOf("@");
+  const lastAtIndex = email.lastIndexOf("@");
+  const lastDotIndex = email.lastIndexOf(".");
+  return (
+    atIndex > 0 &&
+    atIndex === lastAtIndex &&
+    lastDotIndex > atIndex + 1 &&
+    lastDotIndex < email.length - 1
+  );
+};
 
 const getSupabasePublicClient = () => {
   const supabaseUrl = process.env.SUPABASE_URL;
@@ -343,5 +367,125 @@ export const changePassword = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+// @desc    Request password reset
+// @route   POST /api/auth/forgot-password
+// @access  Public
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const normalizedEmail = email?.toLowerCase().trim();
+    const genericResponse = {
+      success: true,
+      message:
+        "If an account exists for that email, you will receive password reset instructions shortly.",
+    };
+
+    if (!normalizedEmail || !isValidEmailFormat(normalizedEmail)) {
+      return res.status(400).json({
+        success: false,
+        error: "Please provide a valid email address",
+        statusCode: 400,
+      });
+    }
+
+    const user = await User.findOne({ email: normalizedEmail }).select(
+      "+passwordResetToken +passwordResetExpires"
+    );
+
+    if (user) {
+      const resetToken = crypto.randomBytes(32).toString("hex");
+      const resetTokenHash = crypto
+        .createHash("sha256")
+        .update(resetToken)
+        .digest("hex");
+
+      user.passwordResetToken = resetTokenHash;
+      user.passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000);
+      await user.save();
+
+      const clientBaseUrl = (process.env.CLIENT_URL || "http://localhost:5173").replace(/\/$/, "");
+      const resetUrl = `${clientBaseUrl}/reset-password/${resetToken}`;
+
+      try {
+        await sendPasswordResetEmail({
+          to: user.email,
+          username: user.username,
+          resetUrl,
+        });
+      } catch (emailError) {
+        console.error("FORGOT_PASSWORD_EMAIL_ERROR:", emailError);
+      }
+    }
+
+    return res.status(200).json(genericResponse);
+  } catch (error) {
+    console.error("FORGOT_PASSWORD_ERROR:", error);
+    return res.status(200).json({
+      success: true,
+      message:
+        "If an account exists for that email, you will receive password reset instructions shortly.",
+    });
+  }
+};
+
+// @desc    Reset password with token
+// @route   POST /api/auth/reset-password/:token
+// @access  Public
+export const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        error: "Reset token is required",
+        statusCode: 400,
+      });
+    }
+
+    if (!isStrongPassword(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.",
+        statusCode: 400,
+      });
+    }
+
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      passwordResetToken: tokenHash,
+      passwordResetExpires: { $gt: new Date() },
+    }).select("+password +passwordResetToken +passwordResetExpires");
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        error: "Reset token is invalid or has expired",
+        statusCode: 400,
+      });
+    }
+
+    user.password = newPassword;
+    user.passwordResetToken = null;
+    user.passwordResetExpires = null;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Password reset successfully. Please log in with your new password.",
+    });
+  } catch (error) {
+    console.error("RESET_PASSWORD_ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Unable to reset password. Please try again.",
+      statusCode: 500,
+    });
   }
 };

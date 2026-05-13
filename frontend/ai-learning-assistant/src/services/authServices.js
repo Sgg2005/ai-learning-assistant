@@ -38,6 +38,28 @@ const verifyEmail = async (email, code) => {
   }
 };
 
+const requestPasswordReset = async (email) => {
+  try {
+    const response = await axiosInstance.post(API_PATHS.AUTH.FORGOT_PASSWORD, {
+      email,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'An unknown error occurred' };
+  }
+};
+
+const resetPassword = async (token, newPassword) => {
+  try {
+    const response = await axiosInstance.post(API_PATHS.AUTH.RESET_PASSWORD(token), {
+      newPassword,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'An unknown error occurred' };
+  }
+};
+
 const getProfile = async () => {
   try {
     const response = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
@@ -68,7 +90,9 @@ const changePassword = async (passwords) => {
 const authService = {
   login,
   register,
-  verifyEmail, // <-- added
+  verifyEmail,
+  requestPasswordReset,
+  resetPassword,
   getProfile,
   updateProfile,
   changePassword,

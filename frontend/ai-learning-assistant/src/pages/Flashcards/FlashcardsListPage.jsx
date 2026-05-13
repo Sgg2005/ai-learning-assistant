@@ -3,7 +3,7 @@ import flashcardService from '../../services/flashcardServices';
 import PageHeader from '../../components/common/PageHeader';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
-import FlashcardSetCard from '../../components/flashcards/flashcardSetCard';
+import FlashcardSetCard from '../../components/flashcards/FlashcardSetCard';
 import toast from 'react-hot-toast';
 import { Star, Search, X } from 'lucide-react';
 
