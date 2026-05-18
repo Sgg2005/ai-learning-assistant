@@ -345,3 +345,89 @@ export const changePassword = async (req, res, next) => {
     next(error);
   }
 };
+
+// store OTPs in memory
+const passwordResetOtps = new Map();
+
+// @desc    Forgot password - send OTP
+// @route   POST /api/auth/forgot-password
+// @access  Public
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const normalizedEmail = email?.toLowerCase().trim();
+
+    if (!normalizedEmail) {
+      return res.status(400).json({ success: false, error: 'Please provide an email' });
+    }
+
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'No account found with that email' });
+    }
+
+    const supabasePublic = getSupabasePublicClient();
+    const { error } = await supabasePublic.auth.signInWithOtp({
+      email: normalizedEmail,
+      options: { shouldCreateUser: false }
+    });
+
+    if (error) {
+      console.log('FORGOT PASSWORD SUPABASE ERROR:', error);
+      return res.status(400).json({ success: false, error: error.message });
+    }
+
+    return res.status(200).json({ 
+      success: true, 
+      message: 'OTP sent to your email'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Reset password after OTP verification
+// @route   POST /api/auth/reset-password
+// @access  Public
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { email, code, newPassword } = req.body;
+    const normalizedEmail = email?.toLowerCase().trim();
+
+    if (!normalizedEmail || !code || !newPassword) {
+      return res.status(400).json({ success: false, error: 'Email, code and new password are required' });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ success: false, error: 'Password must be at least 8 characters' });
+    }
+
+    // Verify OTP with Supabase
+    const supabasePublic = getSupabasePublicClient();
+    const { error: otpError } = await supabasePublic.auth.verifyOtp({
+      email: normalizedEmail,
+      token: code.trim(),
+      type: 'email'
+    });
+
+    if (otpError) {
+      return res.status(400).json({ success: false, error: 'Invalid or expired OTP' });
+    }
+
+    // Update password in MongoDB
+    const user = await User.findOne({ email: normalizedEmail }).select('+password');
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Password reset successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};

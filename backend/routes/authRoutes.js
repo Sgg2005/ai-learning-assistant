@@ -6,7 +6,9 @@ import {
   login,
   getProfile,
   updateProfile,
-  changePassword
+  changePassword,
+  forgotPassword,
+  resetPassword
 } from '../controllers/authController.js';
 import protect from '../middleware/auth.js';
 
@@ -55,6 +57,8 @@ const verifyEmailValidation = [
 router.post('/register', registerValidation, register);
 router.post('/verify-email', verifyEmailValidation, verifyEmail);
 router.post('/login', loginValidation, login);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
 
 // protected routes
 router.get('/profile', protect, getProfile);

@@ -64,8 +64,8 @@ export const generateFlashcards = async (req, res, next) => {
 // @route   POST /api/ai/generate-quiz
 // @access  Private
 export const generateQuiz = async (req, res, next) => {
-    try{
-        const { documentId, questionCount = 10 } = req.body;
+    try {
+        const { documentId, questionCount = 10, difficulty = 'medium' } = req.body;
 
         if (!documentId) {
             return res.status(400).json({
@@ -91,7 +91,8 @@ export const generateQuiz = async (req, res, next) => {
 
         const questions = await geminiService.generateQuiz(
             document.extractedText,
-            parseInt(questionCount)
+            parseInt(questionCount),
+            difficulty
         );
 
         const quiz = new Quiz({
@@ -155,6 +156,48 @@ export const generateSummary = async (req, res, next) => {
                 summary: summary
             },
             message: 'Summary generated successfully'
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Extract key terms from document
+// @route   POST /api/ai/extract-key-terms
+// @access  Private
+export const extractKeyTerms = async (req, res, next) => {
+    try {
+        const { documentId } = req.body;
+
+        if (!documentId) {
+            return res.status(400).json({
+                success: false,
+                error: 'Please provide documentId',
+                statusCode: 400
+            });
+        }
+
+        const document = await Document.findOne({
+            _id: documentId,
+            userId: req.user._id,
+            status: 'ready'
+        });
+
+        if (!document) {
+            return res.status(404).json({
+                success: false,
+                error: 'Document not found or not ready',
+                statusCode: 404
+            });
+        }
+
+        const terms = await geminiService.extractKeyTerms(document.extractedText);
+
+        res.status(200).json({
+            success: true,
+            data: { terms },
+            message: 'Key terms extracted successfully'
         });
 
     } catch (error) {

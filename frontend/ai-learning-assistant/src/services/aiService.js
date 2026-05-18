@@ -46,6 +46,15 @@ const explainConcept = async (documentId, concept) => {
     }
 };
 
+const extractKeyTerms = async (documentId) => {
+    try {
+        const response = await axiosInstance.post(API_PATHS.AI.EXTRACT_KEY_TERMS, { documentId });
+        return response.data?.data;
+    } catch (error) {
+        throw error.response?.data || { message: 'Failed to extract key terms' };
+    }
+};
+
 const getChatSessions = async (documentId) => {
     try {
         const response = await axiosInstance.get(API_PATHS.AI.GET_CHAT_SESSIONS(documentId));
@@ -90,6 +99,7 @@ const aiService = {
     explainConcept,
     getChatSessions,
     getChatSession,
+    extractKeyTerms,
     renameChatSession,
     deleteChatSession,
 };

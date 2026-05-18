@@ -20,6 +20,7 @@ const QuizManager = ({ documentId }) => {
     const [deleting, setDeleting] = useState(false);
     const [selectedQuiz, setSelectedQuiz] = useState(null);
     const [sortBy, setSortBy] = useState('date-desc');
+    const [difficulty, setDifficulty] = useState('medium');
 
     const fetchQuizzes = async () => {
         setLoading(true);
@@ -52,7 +53,7 @@ const QuizManager = ({ documentId }) => {
         e.preventDefault();
         setGenerating(true);
         try {
-            await aiService.generateQuiz(documentId, { questionCount: numQuestions });
+            await aiService.generateQuiz(documentId, { questionCount: numQuestions, difficulty });
             toast.success('Quiz generated successfully');
             setIsGenerateModalOpen(false);
             await fetchQuizzes();
@@ -165,6 +166,31 @@ const QuizManager = ({ documentId }) => {
                             required
                             className="w-full px-4 py-2.5 rounded-xl bg-orange-50 dark:bg-slate-700 border border-orange-100 dark:border-slate-600 text-sm text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500/40 transition-all"
                         />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
+                            Difficulty Level
+                        </label>
+                        <div className="flex items-center gap-2">
+                            {['easy', 'medium', 'hard'].map((level) => (
+                                <button
+                                    key={level}
+                                    type="button"
+                                    onClick={() => setDifficulty(level)}
+                                    className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-medium capitalize transition-all ${
+                                        difficulty === level
+                                            ? level === 'easy'
+                                                ? 'bg-emerald-500 text-white shadow-md shadow-emerald-200'
+                                                : level === 'medium'
+                                                ? 'bg-orange-400 text-white shadow-md shadow-orange-200'
+                                                : 'bg-red-500 text-white shadow-md shadow-red-200'
+                                            : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                                    }`}
+                                >
+                                    {level}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                     <div className="flex items-center gap-3">
                         <button

@@ -73,10 +73,16 @@ export const generateFlashcards = async (text, count = 10) => {
  * Generate quiz questions
  * @param {string} text - Document text
  * @param {number} numQuestions - Number of questions
+ * @param {string} difficulty - Difficulty level
  * @returns {Promise<Array<{question: string, options: Array, correctAnswer: string, explanation: string, difficulty: string}>>}
  */
-export const generateQuiz = async (text, numQuestions = 5) => {
+export const generateQuiz = async (text, numQuestions = 5, difficulty = 'medium') => {
     const prompt = `Generate exactly ${numQuestions} multiple choice questions from the following text.
+    All questions must be at ${difficulty} difficulty level.
+    - Easy: basic recall and simple understanding
+    - Medium: application and analysis of concepts
+    - Hard: complex reasoning and critical thinking
+
     Format each question as:
     Q: [Question]
     O1: [Option 1]
@@ -85,7 +91,7 @@ export const generateQuiz = async (text, numQuestions = 5) => {
     O4: [Option 4]
     C: [Correct option - exactly as written above]
     E: [Brief explanation]
-    D: [Difficulty: easy, medium, or hard]
+    D: [Difficulty: ${difficulty}]
 
     Separate questions with "----"
 
@@ -99,13 +105,12 @@ export const generateQuiz = async (text, numQuestions = 5) => {
         });
 
         const generatedText = response.text;
-
         const questions = [];
         const questionBlocks = generatedText.split('----').filter(q => q.trim());
 
         for (const block of questionBlocks) {
             const lines = block.trim().split('\n');
-            let question = '', options = [], correctAnswer = '', explanation = '', difficulty = 'medium';
+            let question = '', options = [], correctAnswer = '', explanation = '', diff = difficulty;
 
             for (const line of lines) {
                 const trimmed = line.trim();
@@ -118,15 +123,13 @@ export const generateQuiz = async (text, numQuestions = 5) => {
                 } else if (trimmed.startsWith('E:')) {
                     explanation = trimmed.substring(2).trim();
                 } else if (trimmed.startsWith('D:')) {
-                    const diff = trimmed.substring(2).trim().toLowerCase();
-                    if (['easy', 'medium', 'hard'].includes(diff)) {
-                        difficulty = diff;
-                    }
+                    const d = trimmed.substring(2).trim().toLowerCase();
+                    if (['easy', 'medium', 'hard'].includes(d)) diff = d;
                 }
             }
 
             if (question && options.length === 4 && correctAnswer) {
-                questions.push({ question, options, correctAnswer, explanation, difficulty });
+                questions.push({ question, options, correctAnswer, explanation, difficulty: diff });
             }
         }
 
@@ -221,5 +224,58 @@ export const explainConcept = async (concept, context) => {
     } catch (error) {
         console.error('Gemini API error:', error);
         throw new Error('Failed to explain concept');
+    }
+};
+
+/**
+ * Extract key terms from document
+ * @param {string} text - Document text
+ * @returns {Promise<Array<{term: string, definition: string}>>}
+ */
+export const extractKeyTerms = async (text) => {
+    const prompt = `Extract the 10 most important key terms or concepts from the following text.
+    For each term provide a clear and concise definition based on the text.
+
+    Format each term as:
+    T: [Term]
+    D: [Definition - 1-2 sentences]
+
+    Separate each term with "----"
+
+    Text:
+    ${text.substring(0, 15000)}`;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash-lite",
+            contents: prompt,
+        });
+
+        const generatedText = response.text;
+        const terms = [];
+        const blocks = generatedText.split('----').filter(b => b.trim());
+
+        for (const block of blocks) {
+            const lines = block.trim().split('\n');
+            let term = '', definition = '';
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('T:')) {
+                    term = trimmed.substring(2).trim();
+                } else if (trimmed.startsWith('D:')) {
+                    definition = trimmed.substring(2).trim();
+                }
+            }
+
+            if (term && definition) {
+                terms.push({ term, definition });
+            }
+        }
+
+        return terms;
+    } catch (error) {
+        console.error('Gemini API error:', error);
+        throw new Error('Failed to extract key terms');
     }
 };

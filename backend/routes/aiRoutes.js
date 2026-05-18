@@ -5,6 +5,7 @@ import {
     generateSummary,
     chat,
     explainConcept,
+    extractKeyTerms,
     getChatSessions,
     getChatSession,
     renameChatSession,
@@ -21,6 +22,7 @@ router.post('/generate-quiz', generateQuiz);
 router.post('/generate-summary', generateSummary);
 router.post('/chat', chat);
 router.post('/explain-concept', explainConcept);
+router.post('/extract-key-terms', extractKeyTerms);
 
 // chat sessions
 router.get('/chat-sessions', getChatSessions);

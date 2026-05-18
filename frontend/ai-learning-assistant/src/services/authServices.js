@@ -65,6 +65,38 @@ const changePassword = async (passwords) => {
   }
 };
 
+const forgotPassword = async (email) => {
+  try {
+    const response = await axiosInstance.post(API_PATHS.AUTH.FORGOT_PASSWORD, { email });
+    return response.data;
+  } catch (error) {
+    const msg =
+      error?.response?.data?.message ||
+      error?.response?.data?.error ||
+      error?.message ||
+      "Failed to send OTP";
+    throw new Error(msg);
+  }
+};
+
+const resetPassword = async (email, code, newPassword) => {
+  try {
+    const response = await axiosInstance.post(API_PATHS.AUTH.RESET_PASSWORD, {
+      email,
+      code,
+      newPassword,
+    });
+    return response.data;
+  } catch (error) {
+    const msg =
+      error?.response?.data?.message ||
+      error?.response?.data?.error ||
+      error?.message ||
+      "Failed to reset password";
+    throw new Error(msg);
+  }
+};
+
 const authService = {
   login,
   register,
@@ -72,6 +104,8 @@ const authService = {
   getProfile,
   updateProfile,
   changePassword,
+  forgotPassword,
+  resetPassword,
 };
 
 export default authService;

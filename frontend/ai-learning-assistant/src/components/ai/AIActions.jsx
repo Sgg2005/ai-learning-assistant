@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Sparkles, BookOpen, Lightbulb } from "lucide-react";
+import { Sparkles, BookOpen, Lightbulb, Tag } from "lucide-react";
 import aiService from "../../services/aiService";
 import toast from "react-hot-toast";
 import MarkdownRenderer from "../common/MarkdownRenderer";
@@ -13,6 +13,8 @@ const AIActions = () => {
   const [modalContent, setModalContent] = useState("");
   const [modalTitle, setModalTitle] = useState("");
   const [concept, setConcept] = useState("");
+  const [keyTerms, setKeyTerms] = useState([]);
+  const [isKeyTermsModalOpen, setIsKeyTermsModalOpen] = useState(false);
 
   const handleGenerateSummary = async () => {
     setLoadingAction("summary");
@@ -44,6 +46,19 @@ const AIActions = () => {
       setConcept("");
     } catch (error) {
       toast.error("Failed to explain concept");
+    } finally {
+      setLoadingAction(null);
+    }
+  };
+
+  const handleExtractKeyTerms = async () => {
+    setLoadingAction("keyterms");
+    try {
+      const { terms } = await aiService.extractKeyTerms(documentId);
+      setKeyTerms(terms);
+      setIsKeyTermsModalOpen(true);
+    } catch (error) {
+      toast.error("Failed to extract key terms");
     } finally {
       setLoadingAction(null);
     }
@@ -122,6 +137,30 @@ const AIActions = () => {
               </div>
             </form>
           </div>
+
+          <div className="bg-white dark:bg-slate-800 border border-orange-100 dark:border-slate-700 rounded-2xl p-5 shadow-sm flex flex-col gap-4 hover:shadow-md hover:border-orange-200 dark:hover:border-orange-500/40 transition-all">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center shrink-0">
+                <Tag className="w-5 h-5 text-orange-500" strokeWidth={2} />
+              </div>
+              <h4 className="text-base font-semibold text-slate-800 dark:text-slate-100">Key Terms</h4>
+            </div>
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+              Extract the most important terms and concepts from the document with clear definitions.
+            </p>
+            <button
+              onClick={handleExtractKeyTerms}
+              disabled={loadingAction === "keyterms"}
+              className="mt-auto w-full py-2.5 px-4 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-medium shadow-sm shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {loadingAction === "keyterms" ? (
+                <span className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Extracting...
+                </span>
+              ) : "Extract Key Terms"}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -132,6 +171,17 @@ const AIActions = () => {
               <MarkdownRenderer content={modalContent} />
             </div>
           </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isKeyTermsModalOpen} onClose={() => setIsKeyTermsModalOpen(false)} title="Key Terms">
+        <div className="max-h-[65vh] overflow-y-auto pr-1 flex flex-col gap-3">
+          {keyTerms.map((item, index) => (
+            <div key={index} className="bg-orange-50 dark:bg-slate-700/50 border border-orange-100 dark:border-slate-600 rounded-xl p-4">
+              <p className="text-sm font-semibold text-orange-500 mb-1">{item.term}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{item.definition}</p>
+            </div>
+          ))}
         </div>
       </Modal>
     </>
