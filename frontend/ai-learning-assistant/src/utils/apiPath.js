@@ -1,15 +1,15 @@
 export const BASE_URL = "http://localhost:8000";
 
 export const API_PATHS = {
-   AUTH: {
+  AUTH: {
     REGISTER: "/api/auth/register",
     LOGIN: "/api/auth/login",
     VERIFY_EMAIL: "/api/auth/verify-email",
     GET_PROFILE: "/api/auth/profile",
     UPDATE_PROFILE: "/api/auth/profile",
     CHANGE_PASSWORD: "/api/auth/change-password",
-    FORGOT_PASSWORD: '/api/auth/forgot-password',
-    RESET_PASSWORD: '/api/auth/reset-password',
+    FORGOT_PASSWORD: "/api/auth/forgot-password",
+    RESET_PASSWORD: "/api/auth/reset-password",
   },
 
   DOCUMENTS: {
@@ -28,6 +28,7 @@ export const API_PATHS = {
     CHAT: "/api/ai/chat",
     EXPLAIN_CONCEPT: "/api/ai/explain-concept",
     EXTRACT_KEY_TERMS: "/api/ai/extract-key-terms",
+    GENERATE_STUDY_PLAN: "/api/ai/generate-study-plan",
     GET_CHAT_SESSIONS: (documentId) => `/api/ai/chat-sessions?documentId=${documentId}`,
     GET_CHAT_SESSION: (sessionId) => `/api/ai/chat-sessions/${sessionId}`,
     RENAME_CHAT_SESSION: (sessionId) => `/api/ai/chat-sessions/${sessionId}`,

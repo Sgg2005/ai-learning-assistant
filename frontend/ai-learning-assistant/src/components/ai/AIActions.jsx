@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Sparkles, BookOpen, Lightbulb, Tag } from "lucide-react";
+import { Sparkles, BookOpen, Lightbulb, Tag, CalendarDays } from "lucide-react";
 import aiService from "../../services/aiService";
 import toast from "react-hot-toast";
 import MarkdownRenderer from "../common/MarkdownRenderer";
@@ -59,6 +59,20 @@ const AIActions = () => {
       setIsKeyTermsModalOpen(true);
     } catch (error) {
       toast.error("Failed to extract key terms");
+    } finally {
+      setLoadingAction(null);
+    }
+  };
+
+  const handleGenerateStudyPlan = async () => {
+    setLoadingAction("studyplan");
+    try {
+      const { plan } = await aiService.generateStudyPlan(documentId);
+      setModalTitle("Study Plan (Day-by-Day)");
+      setModalContent(plan);
+      setIsModalOpen(true);
+    } catch (error) {
+      toast.error("Failed to generate study plan");
     } finally {
       setLoadingAction(null);
     }
@@ -159,6 +173,30 @@ const AIActions = () => {
                   Extracting...
                 </span>
               ) : "Extract Key Terms"}
+            </button>
+          </div>
+
+          <div className="bg-white dark:bg-slate-800 border border-orange-100 dark:border-slate-700 rounded-2xl p-5 shadow-sm flex flex-col gap-4 hover:shadow-md hover:border-orange-200 dark:hover:border-orange-500/40 transition-all">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center shrink-0">
+                <CalendarDays className="w-5 h-5 text-orange-500" strokeWidth={2} />
+              </div>
+              <h4 className="text-base font-semibold text-slate-800 dark:text-slate-100">Study Plan Generator</h4>
+            </div>
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+              Create a day-by-day study plan based on the document content.
+            </p>
+            <button
+              onClick={handleGenerateStudyPlan}
+              disabled={loadingAction === "studyplan"}
+              className="mt-auto w-full py-2.5 px-4 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white text-sm font-medium shadow-sm shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {loadingAction === "studyplan" ? (
+                <span className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Generating...
+                </span>
+              ) : "Generate Study Plan"}
             </button>
           </div>
         </div>
