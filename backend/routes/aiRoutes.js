@@ -11,6 +11,8 @@ import {
   renameChatSession,
   deleteChatSession,
   generateStudyPlan,
+  generateMcqQuestions,
+  generateWrittenExamPaper,
 } from "../controllers/aiController.js";
 import protect from "../middleware/auth.js";
 
@@ -25,6 +27,8 @@ router.post("/chat", chat);
 router.post("/explain-concept", explainConcept);
 router.post("/extract-key-terms", extractKeyTerms);
 router.post("/generate-study-plan", generateStudyPlan);
+router.post("/generate-mcq-questions", generateMcqQuestions);
+router.post("/generate-written-exam-paper", generateWrittenExamPaper);
 
 // chat sessions
 router.get("/chat-sessions", getChatSessions);

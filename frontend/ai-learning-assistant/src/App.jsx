@@ -16,6 +16,9 @@ import FlashCardPage from './pages/Flashcards/FlashCardPage';
 import QuizTakePage from './pages/Quizzes/QuizTakePage';
 import QuizResultPage from './pages/Quizzes/QuizResultPage';
 import AppLayout from './components/layout/AppLayout';
+import ExamGeneratorPage from './pages/ExamGeneratorPage';
+import McqGeneratorPage from './pages/McqGeneratorPage';
+import WrittenExamGeneratorPage from './pages/WrittenExamGeneratorPage';
 
 const ProtectedLayout = () => (
   <ProtectedRoute>
@@ -59,6 +62,9 @@ const App = () => {
           <Route path="/flashcards/:id" element={<FlashCardPage />} />
           <Route path="/quizzes/take/:quizId" element={<QuizTakePage />} />
           <Route path="/quizzes/:quizId/results" element={<QuizResultPage />} />
+          <Route path="/exam-generator" element={<ExamGeneratorPage />} />
+          <Route path="/exam-generator/mcq" element={<McqGeneratorPage />} />
+          <Route path="/exam-generator/written" element={<WrittenExamGeneratorPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

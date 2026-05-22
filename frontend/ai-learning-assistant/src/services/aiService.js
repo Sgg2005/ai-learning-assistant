@@ -86,6 +86,30 @@ const generateStudyPlan = async (documentId, days = 7) => {
   }
 };
 
+const generateMcqQuestions = async ({ documentId, questionCount = 10 }) => {
+  try {
+    const response = await axiosInstance.post(
+      API_PATHS.AI.GENERATE_MCQ_QUESTIONS,
+      { documentId, questionCount }
+    );
+    return response.data?.data;
+  } catch (error) {
+    throw error.response?.data || { message: "Failed to generate MCQ questions" };
+  }
+};
+
+const generateWrittenExamPaper = async ({ documentId, questionCount = 5, paperType = "subparts" }) => {
+  try {
+    const response = await axiosInstance.post(
+      API_PATHS.AI.GENERATE_WRITTEN_EXAM_PAPER,
+      { documentId, questionCount, paperType }
+    );
+    return response.data?.data;
+  } catch (error) {
+    throw error.response?.data || { message: "Failed to generate written exam paper" };
+  }
+};
+
 const getChatSessions = async (documentId) => {
   try {
     const response = await axiosInstance.get(
@@ -139,6 +163,8 @@ const aiService = {
   explainConcept,
   extractKeyTerms,
   generateStudyPlan,
+  generateMcqQuestions,
+  generateWrittenExamPaper,
   getChatSessions,
   getChatSession,
   renameChatSession,

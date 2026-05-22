@@ -29,6 +29,8 @@ export const API_PATHS = {
     EXPLAIN_CONCEPT: "/api/ai/explain-concept",
     EXTRACT_KEY_TERMS: "/api/ai/extract-key-terms",
     GENERATE_STUDY_PLAN: "/api/ai/generate-study-plan",
+    GENERATE_MCQ_QUESTIONS: "/api/ai/generate-mcq-questions",
+    GENERATE_WRITTEN_EXAM_PAPER: "/api/ai/generate-written-exam-paper",
     GET_CHAT_SESSIONS: (documentId) => `/api/ai/chat-sessions?documentId=${documentId}`,
     GET_CHAT_SESSION: (sessionId) => `/api/ai/chat-sessions/${sessionId}`,
     RENAME_CHAT_SESSION: (sessionId) => `/api/ai/chat-sessions/${sessionId}`,

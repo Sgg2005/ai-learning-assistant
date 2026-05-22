@@ -3,14 +3,50 @@ import { GoogleGenAI } from "@google/genai";
 
 dotenv.config();
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
 if (!process.env.GEMINI_API_KEY) {
   console.error(
     "FATAL ERROR: GEMINI_API_KEY is not set in the environment variables."
   );
   process.exit(1);
 }
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const MODELS = ["gemini-2.5-flash-lite", "gemini-2.5-flash"];
+
+const generateWithRetry = async (prompt) => {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    for (const model of MODELS) {
+      try {
+        const response = await ai.models.generateContent({
+          model,
+          contents: prompt,
+        });
+
+        return response.text || "";
+      } catch (error) {
+        lastError = error;
+
+        const isUnavailable =
+          error?.status === 503 ||
+          error?.message?.includes("UNAVAILABLE") ||
+          error?.message?.includes("high demand");
+
+        if (isUnavailable && attempt < 3) {
+          await sleep(1000 * attempt);
+          continue;
+        }
+      }
+    }
+  }
+
+  console.error("Gemini API error:", lastError);
+  throw new Error("Gemini request failed");
+};
 
 /**
  * Generate flashcards from text
@@ -31,14 +67,8 @@ export const generateFlashcards = async (text, count = 10) => {
     ${text.substring(0, 15000)}`;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: prompt,
-    });
+    const generatedText = await generateWithRetry(prompt);
 
-    const generatedText = response.text;
-
-    // Parse the response
     const flashcards = [];
     const cards = generatedText.split("----").filter((c) => c.trim());
 
@@ -80,7 +110,11 @@ export const generateFlashcards = async (text, count = 10) => {
  * @param {string} difficulty - Difficulty level
  * @returns {Promise<Array<{question: string, options: Array, correctAnswer: string, explanation: string, difficulty: string}>>}
  */
-export const generateQuiz = async (text, numQuestions = 5, difficulty = "medium") => {
+export const generateQuiz = async (
+  text,
+  numQuestions = 5,
+  difficulty = "medium"
+) => {
   const prompt = `Generate exactly ${numQuestions} multiple choice questions from the following text.
     All questions must be at ${difficulty} difficulty level.
     - Easy: basic recall and simple understanding
@@ -103,12 +137,8 @@ export const generateQuiz = async (text, numQuestions = 5, difficulty = "medium"
     ${text.substring(0, 15000)}`;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: prompt,
-    });
+    const generatedText = await generateWithRetry(prompt);
 
-    const generatedText = response.text;
     const questions = [];
     const questionBlocks = generatedText.split("----").filter((q) => q.trim());
 
@@ -167,12 +197,7 @@ export const generateSummary = async (text) => {
     ${text.substring(0, 20000)}`;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: prompt,
-    });
-    const generatedText = response.text;
-    return generatedText;
+    return await generateWithRetry(prompt);
   } catch (error) {
     console.error("Gemini API error:", error);
     throw new Error("Failed to generate summary");
@@ -186,7 +211,9 @@ export const generateSummary = async (text) => {
  * @returns {Promise<string>}
  */
 export const chatWithContext = async (question, chunks) => {
-  const context = chunks.map((c, i) => `[Chunk ${i + 1}]\n${c.content}`).join("\n\n");
+  const context = chunks
+    .map((c, i) => `[Chunk ${i + 1}]\n${c.content}`)
+    .join("\n\n");
 
   const prompt = `You are a friendly and helpful study assistant.
 
@@ -202,12 +229,7 @@ export const chatWithContext = async (question, chunks) => {
     Answer:`;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: prompt,
-    });
-    const generatedText = response.text;
-    return generatedText;
+    return await generateWithRetry(prompt);
   } catch (error) {
     console.error("Gemini API error:", error);
     throw new Error("Failed to process chat request");
@@ -229,12 +251,7 @@ export const explainConcept = async (concept, context) => {
     ${context.substring(0, 10000)}`;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: prompt,
-    });
-    const generatedText = response.text;
-    return generatedText;
+    return await generateWithRetry(prompt);
   } catch (error) {
     console.error("Gemini API error:", error);
     throw new Error("Failed to explain concept");
@@ -260,12 +277,8 @@ export const extractKeyTerms = async (text) => {
     ${text.substring(0, 15000)}`;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: prompt,
-    });
+    const generatedText = await generateWithRetry(prompt);
 
-    const generatedText = response.text;
     const terms = [];
     const blocks = generatedText.split("----").filter((b) => b.trim());
 
@@ -314,13 +327,96 @@ export const generateStudyPlan = async (text, days = 7) => {
     ${text.substring(0, 20000)}`;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: prompt,
-    });
-    return response.text;
+    return await generateWithRetry(prompt);
   } catch (error) {
     console.error("Gemini API error:", error);
     throw new Error("Failed to generate study plan");
+  }
+};
+
+/**
+ * Generate written exam paper
+ * @param {string} text - Document text
+ * @param {number} questionCount - Number of main questions
+ * @param {string} paperType - Paper format type
+ * @returns {Promise<string>}
+ */
+export const generateWrittenExamPaper = async (
+  text,
+  questionCount = 5,
+  paperType = "subparts"
+) => {
+  let formatInstructions = "";
+
+  if (paperType === "subparts") {
+    formatInstructions = `
+Generate the paper in this exact format:
+
+1.
+(a) [question]
+(b) [question]
+(c) [question]
+
+2.
+(a) [question]
+(b) [question]
+(c) [question]
+
+Rules:
+- Each main question must have exactly 3 subparts: (a), (b), (c)
+- Do not number subparts as 1, 2, 3
+- Do not show answers in the student paper
+- Keep the numbering exactly like 1, 2, 3 for main questions and letters for subparts
+`;
+  } else if (paperType === "short-answer") {
+    formatInstructions = `
+Generate short-answer questions in this exact format:
+
+1. [question]
+2. [question]
+3. [question]
+4. [question]
+
+Rules:
+- Do not show answers
+- Keep the numbering exactly as 1, 2, 3, 4
+`;
+  } else if (paperType === "essay") {
+    formatInstructions = `
+Generate essay-style questions in this exact format:
+
+1. [long-form question]
+2. [long-form question]
+3. [long-form question]
+
+Rules:
+- Do not show answers
+- Keep the numbering exactly as 1, 2, 3
+`;
+  } else {
+    formatInstructions = `
+Generate a mixed-format written paper with clear numbering and subparts where appropriate.
+Do not show answers.
+`;
+  }
+
+  const prompt = `You are generating a written exam paper based strictly on the document below.
+
+${formatInstructions}
+
+Important rules:
+- Follow the chosen format exactly
+- Do not generate MCQ options
+- Do not include answers in the student-facing paper
+- Base the questions strictly on the document content
+
+Document:
+${text.substring(0, 20000)}`;
+
+  try {
+    return await generateWithRetry(prompt);
+  } catch (error) {
+    console.error("Gemini API error:", error);
+    throw new Error("Failed to generate written exam paper");
   }
 };

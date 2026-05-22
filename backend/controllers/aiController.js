@@ -521,3 +521,109 @@ export const generateStudyPlan = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Generate MCQ questions from document
+// @route   POST /api/ai/generate-mcq-questions
+// @access  Private
+export const generateMcqQuestions = async (req, res, next) => {
+  try {
+    const { documentId, questionCount = 10 } = req.body;
+
+    if (!documentId) {
+      return res.status(400).json({
+        success: false,
+        error: "Please provide documentId",
+        statusCode: 400,
+      });
+    }
+
+    const document = await Document.findOne({
+      _id: documentId,
+      userId: req.user._id,
+      status: "ready",
+    });
+
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        error: "Document not found or not ready",
+        statusCode: 404,
+      });
+    }
+
+    const questions = await geminiService.generateQuiz(
+      document.extractedText,
+      parseInt(questionCount),
+      "medium"
+    );
+
+    const quiz = new Quiz({
+      userId: req.user._id,
+      documentId: document._id,
+      title: `${document.title} - MCQ Quiz`,
+      questions: questions,
+      totalQuestions: questions.length,
+      userAnswers: [],
+      score: 0,
+    });
+
+    await quiz.save();
+
+    res.status(200).json({
+      success: true,
+      data: quiz,
+      message: "MCQ questions generated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Generate written exam paper from document
+// @route   POST /api/ai/generate-written-exam-paper
+// @access  Private
+export const generateWrittenExamPaper = async (req, res, next) => {
+  try {
+    const { documentId, questionCount = 5, paperType = "subparts" } = req.body;
+
+    if (!documentId) {
+      return res.status(400).json({
+        success: false,
+        error: "Please provide documentId",
+        statusCode: 400,
+      });
+    }
+
+    const document = await Document.findOne({
+      _id: documentId,
+      userId: req.user._id,
+      status: "ready",
+    });
+
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        error: "Document not found or not ready",
+        statusCode: 404,
+      });
+    }
+
+    const paper = await geminiService.generateWrittenExamPaper(
+      document.extractedText,
+      parseInt(questionCount),
+      paperType
+    );
+
+    res.status(200).json({
+      success: true,
+      data: {
+        documentId: document._id,
+        title: `${document.title} - Written Exam Paper`,
+        questions: paper,
+      },
+      message: "Written exam paper generated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
